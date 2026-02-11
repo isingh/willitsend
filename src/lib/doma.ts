@@ -2,8 +2,8 @@ const DOMA_API_URL =
   process.env.NEXT_PUBLIC_DOMA_SUBGRAPH_URL ||
   "https://api.doma.xyz/graphql";
 
-/** CAIP-2 network ID for Doma mainnet (chain ID 1818). */
-const DOMA_CAIP2_NETWORK_ID = "eip155:1818";
+/** CAIP-2 network ID for Doma mainnet (chain ID 97477). */
+const DOMA_CAIP2_NETWORK_ID = "eip155:97477";
 
 export interface DomainNFT {
   id: string;
