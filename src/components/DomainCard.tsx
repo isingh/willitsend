@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import { useAccount } from "wagmi";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { DomainNFT } from "@/lib/doma";
 
 function formatDate(dateStr?: string): string {
@@ -19,6 +22,36 @@ function isExpiringSoon(expiresAt?: string): boolean {
 
 export function DomainCard({ domain }: { domain: DomainNFT }) {
   const expiring = isExpiringSoon(domain.expiresAt);
+  const { address } = useAccount();
+  const queryClient = useQueryClient();
+  const [listed, setListed] = useState(false);
+
+  const listMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/domains/list", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          domainName: domain.name,
+          tokenId: domain.tokenId,
+          ownerAddress: address,
+        }),
+      });
+      if (res.status === 409) {
+        setListed(true);
+        return;
+      }
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to list");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      setListed(true);
+      queryClient.invalidateQueries({ queryKey: ["listed-domains"] });
+    },
+  });
 
   return (
     <div className="group relative overflow-hidden rounded-xl border border-white/10 bg-zinc-900 p-5 transition-all hover:border-indigo-500/50 hover:bg-zinc-900/80">
@@ -61,6 +94,31 @@ export function DomainCard({ domain }: { domain: DomainNFT }) {
             )}
           </p>
         </div>
+      </div>
+
+      {/* List for voting button */}
+      <div className="mt-4">
+        {listed ? (
+          <span className="inline-flex items-center gap-1.5 text-xs text-green-400">
+            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+            </svg>
+            Listed for voting
+          </span>
+        ) : (
+          <button
+            onClick={() => listMutation.mutate()}
+            disabled={listMutation.isPending}
+            className="w-full rounded-lg bg-indigo-500/10 px-3 py-2 text-xs font-medium text-indigo-400 transition-colors hover:bg-indigo-500/20 disabled:opacity-50"
+          >
+            {listMutation.isPending ? "Listing..." : "List for Voting"}
+          </button>
+        )}
+        {listMutation.error && (
+          <p className="mt-1 text-xs text-red-400">
+            {listMutation.error.message}
+          </p>
+        )}
       </div>
     </div>
   );
