@@ -1,6 +1,4 @@
-const DOMA_SUBGRAPH_URL =
-  process.env.NEXT_PUBLIC_DOMA_SUBGRAPH_URL ||
-  "https://api.doma.xyz/graphql";
+const DOMA_SUBGRAPH_URL = "https://api.doma.xyz/graphql";
 
 export interface DomainNFT {
   id: string;
