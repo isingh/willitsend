@@ -4,7 +4,7 @@ import { Header } from "@/components/Header";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Will It Send - Doma Domain NFT Viewer",
+  title: "Will It Moon - Doma Domain NFT Viewer",
   description:
     "Connect your wallet to view and manage your tokenized domain NFTs on the Doma chain.",
 };

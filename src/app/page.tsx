@@ -218,7 +218,7 @@ export default function HomePage() {
         <div>
           <h1 className="text-3xl font-bold text-white">Vote</h1>
           <p className="mt-2 text-zinc-400">
-            Will it send? Vote 🚀 moon or 💀 dead on listed domains.
+            Will it moon? Vote 🚀 moon or 💀 dead on listed domains.
           </p>
         </div>
         {isConnected && (
