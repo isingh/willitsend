@@ -2,6 +2,8 @@ const DOMA_API_URL =
   process.env.NEXT_PUBLIC_DOMA_SUBGRAPH_URL ||
   "https://api.doma.xyz/graphql";
 
+const DOMA_API_KEY = process.env.NEXT_PUBLIC_DOMA_API_KEY || "";
+
 /** CAIP-2 network ID for Doma mainnet (chain ID 97477). */
 const DOMA_CAIP2_NETWORK_ID = "eip155:97477";
 
@@ -51,7 +53,10 @@ export async function fetchDomainNFTs(
   try {
     const res = await fetch(DOMA_API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(DOMA_API_KEY ? { "Api-Key": DOMA_API_KEY } : {}),
+      },
       body: JSON.stringify({ query, variables }),
     });
 
