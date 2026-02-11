@@ -20,11 +20,25 @@ function isExpiringSoon(expiresAt?: string): boolean {
   return diff > 0 && diff < 90 * 24 * 60 * 60 * 1000; // 90 days
 }
 
-export function DomainCard({ domain }: { domain: DomainNFT }) {
+export interface ListedDomainInfo {
+  id: number;
+  listedAt: string;
+  moonCount: number;
+  deadCount: number;
+  totalVotes: number;
+}
+
+export function DomainCard({
+  domain,
+  listingInfo,
+}: {
+  domain: DomainNFT;
+  listingInfo?: ListedDomainInfo;
+}) {
   const expiring = isExpiringSoon(domain.expiresAt);
   const { address } = useAccount();
   const queryClient = useQueryClient();
-  const [listed, setListed] = useState(false);
+  const [listed, setListed] = useState(!!listingInfo);
 
   const listMutation = useMutation({
     mutationFn: async () => {
@@ -53,6 +67,9 @@ export function DomainCard({ domain }: { domain: DomainNFT }) {
     },
   });
 
+  const total = listingInfo ? listingInfo.moonCount + listingInfo.deadCount : 0;
+  const moonPct = total > 0 ? Math.round((listingInfo!.moonCount / total) * 100) : 50;
+
   return (
     <div className="group relative overflow-hidden rounded-xl border border-white/10 bg-zinc-900 p-5 transition-all hover:border-indigo-500/50 hover:bg-zinc-900/80">
       {/* Gradient accent */}
@@ -63,15 +80,12 @@ export function DomainCard({ domain }: { domain: DomainNFT }) {
           <h3 className="truncate text-lg font-semibold text-white">
             {domain.name}
           </h3>
-          <p className="mt-1 font-mono text-xs text-zinc-500">
-            Token #{domain.tokenId}
-          </p>
         </div>
-        <div className="ml-3 flex-shrink-0">
-          <span className="inline-flex items-center rounded-full bg-indigo-500/10 px-2.5 py-1 text-xs font-medium text-indigo-400">
-            DOT
+        {listed && listingInfo && (
+          <span className="ml-2 flex-shrink-0 rounded-full bg-green-500/10 px-2 py-0.5 text-xs text-green-400">
+            Listed {formatDate(listingInfo.listedAt)}
           </span>
-        </div>
+        )}
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
@@ -95,6 +109,29 @@ export function DomainCard({ domain }: { domain: DomainNFT }) {
           </p>
         </div>
       </div>
+
+      {/* Vote results if listed and has votes */}
+      {listed && listingInfo && total > 0 && (
+        <div className="mt-4">
+          <div className="flex justify-between text-xs text-zinc-500">
+            <span>{listingInfo.moonCount} moon</span>
+            <span>{listingInfo.deadCount} dead</span>
+          </div>
+          <div className="mt-1 flex h-2 overflow-hidden rounded-full bg-zinc-800">
+            <div
+              className="bg-green-500 transition-all"
+              style={{ width: `${moonPct}%` }}
+            />
+            <div
+              className="bg-red-500 transition-all"
+              style={{ width: `${100 - moonPct}%` }}
+            />
+          </div>
+          <p className="mt-1 text-center text-xs text-zinc-500">
+            {listingInfo.totalVotes} total vote{listingInfo.totalVotes !== 1 ? "s" : ""}
+          </p>
+        </div>
+      )}
 
       {/* List for voting button */}
       <div className="mt-4">

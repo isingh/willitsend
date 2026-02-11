@@ -6,7 +6,6 @@ interface LeaderboardEntry {
   rank: number;
   id: number;
   domainName: string;
-  tokenId: string;
   ownerAddress: string;
   moonCount: number;
   deadCount: number;

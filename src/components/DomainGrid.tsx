@@ -4,6 +4,18 @@ import { useAccount } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDomainNFTs } from "@/lib/doma";
 import { DomainCard } from "./DomainCard";
+import type { ListedDomainInfo } from "./DomainCard";
+
+interface ListedDomainRow {
+  id: number;
+  domainName: string;
+  tokenId: string;
+  ownerAddress: string;
+  listedAt: string;
+  moonCount: number;
+  deadCount: number;
+  totalVotes: number;
+}
 
 export function DomainGrid() {
   const { address, isConnected } = useAccount();
@@ -17,6 +29,31 @@ export function DomainGrid() {
     enabled: isConnected && !!address,
     staleTime: 30_000,
   });
+
+  const { data: listedDomains } = useQuery<ListedDomainRow[]>({
+    queryKey: ["listed-domains-info"],
+    queryFn: async () => {
+      const res = await fetch("/api/domains/listed");
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: isConnected && !!address,
+    staleTime: 15_000,
+  });
+
+  // Build a lookup map from domain name to listing info
+  const listingMap = new Map<string, ListedDomainInfo>();
+  if (listedDomains) {
+    for (const ld of listedDomains) {
+      listingMap.set(ld.domainName.toLowerCase(), {
+        id: ld.id,
+        listedAt: ld.listedAt,
+        moonCount: ld.moonCount,
+        deadCount: ld.deadCount,
+        totalVotes: ld.totalVotes,
+      });
+    }
+  }
 
   if (!isConnected) {
     return (
@@ -41,8 +78,7 @@ export function DomainGrid() {
             Connect Your Wallet
           </h2>
           <p className="mt-2 max-w-sm text-sm text-zinc-400">
-            Link your wallet to view the domain NFTs (DOTs) you own on the
-            Doma chain.
+            Link your wallet to view the domain NFTs you own on the Doma chain.
           </p>
         </div>
       </div>
@@ -99,7 +135,11 @@ export function DomainGrid() {
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {domains.map((domain) => (
-          <DomainCard key={domain.id} domain={domain} />
+          <DomainCard
+            key={domain.id}
+            domain={domain}
+            listingInfo={listingMap.get(domain.name.toLowerCase())}
+          />
         ))}
       </div>
     </div>
