@@ -21,6 +21,12 @@ export function Header() {
             href="/"
             className="text-sm font-medium text-zinc-400 transition-colors hover:text-white"
           >
+            Vote
+          </Link>
+          <Link
+            href="/domains"
+            className="text-sm font-medium text-zinc-400 transition-colors hover:text-white"
+          >
             My Domains
           </Link>
           <Link
@@ -28,12 +34,6 @@ export function Header() {
             className="text-sm font-medium text-zinc-400 transition-colors hover:text-white"
           >
             Leaderboard
-          </Link>
-          <Link
-            href="/vote"
-            className="text-sm font-medium text-zinc-400 transition-colors hover:text-white"
-          >
-            Vote
           </Link>
         </nav>
 
