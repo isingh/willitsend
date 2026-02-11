@@ -2,10 +2,8 @@
 
 import { useAccount } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
-import { fetchDomainNFTs, getMockDomainNFTs } from "@/lib/doma";
+import { fetchDomainNFTs } from "@/lib/doma";
 import { DomainCard } from "./DomainCard";
-
-const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
 
 export function DomainGrid() {
   const { address, isConnected } = useAccount();
@@ -14,9 +12,7 @@ export function DomainGrid() {
     queryKey: ["domains", address],
     queryFn: () => {
       if (!address) return [];
-      return USE_MOCK
-        ? Promise.resolve(getMockDomainNFTs(address))
-        : fetchDomainNFTs(address);
+      return fetchDomainNFTs(address);
     },
     enabled: isConnected && !!address,
     staleTime: 30_000,
