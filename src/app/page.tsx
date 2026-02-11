@@ -123,7 +123,7 @@ function VoteCard({
   );
 }
 
-type SectionTab = "all" | "recent" | "most-voted";
+type SectionTab = "all" | "recent" | "mooning" | "dying";
 
 export default function HomePage() {
   const { address, isConnected } = useAccount();
@@ -199,8 +199,10 @@ export default function HomePage() {
       list = [...list].sort(
         (a, b) => new Date(b.listedAt).getTime() - new Date(a.listedAt).getTime()
       );
-    } else if (activeTab === "most-voted") {
-      list = [...list].sort((a, b) => b.totalVotes - a.totalVotes);
+    } else if (activeTab === "mooning") {
+      list = [...list].sort((a, b) => b.moonCount - a.moonCount);
+    } else if (activeTab === "dying") {
+      list = [...list].sort((a, b) => b.deadCount - a.deadCount);
     }
 
     return list;
@@ -209,7 +211,8 @@ export default function HomePage() {
   const tabs: { key: SectionTab; label: string }[] = [
     { key: "all", label: "All" },
     { key: "recent", label: "Recently Listed" },
-    { key: "most-voted", label: "Most Voted" },
+    { key: "mooning", label: "Mooning 🚀" },
+    { key: "dying", label: "Dying 💀" },
   ];
 
   return (
