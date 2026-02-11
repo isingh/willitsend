@@ -1,6 +1,6 @@
 const DOMA_SUBGRAPH_URL =
   process.env.NEXT_PUBLIC_DOMA_SUBGRAPH_URL ||
-  "https://api-testnet.doma.xyz/graphql";
+  "https://api.doma.xyz/graphql";
 
 export interface DomainNFT {
   id: string;
@@ -52,44 +52,4 @@ export async function fetchDomainNFTs(
     console.error("Failed to fetch domain NFTs:", err);
     return [];
   }
-}
-
-/**
- * Generate mock domain NFTs for development / demo purposes
- */
-export function getMockDomainNFTs(walletAddress: string): DomainNFT[] {
-  return [
-    {
-      id: "1",
-      name: "example.com",
-      tokenId: "1001",
-      owner: walletAddress,
-      registeredAt: "2025-06-15",
-      expiresAt: "2027-06-15",
-    },
-    {
-      id: "2",
-      name: "myproject.xyz",
-      tokenId: "1002",
-      owner: walletAddress,
-      registeredAt: "2025-09-01",
-      expiresAt: "2026-09-01",
-    },
-    {
-      id: "3",
-      name: "web3domains.ai",
-      tokenId: "1003",
-      owner: walletAddress,
-      registeredAt: "2025-11-20",
-      expiresAt: "2027-11-20",
-    },
-    {
-      id: "4",
-      name: "blockchain.io",
-      tokenId: "1004",
-      owner: walletAddress,
-      registeredAt: "2026-01-10",
-      expiresAt: "2028-01-10",
-    },
-  ];
 }
