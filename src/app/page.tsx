@@ -195,7 +195,14 @@ export default function HomePage() {
     }
 
     // Apply tab sorting/filtering
-    if (activeTab === "recent") {
+    if (activeTab === "all") {
+      list = [...list].sort((a, b) => {
+        const aVotes = a.moonCount + a.deadCount;
+        const bVotes = b.moonCount + b.deadCount;
+        if (bVotes !== aVotes) return bVotes - aVotes;
+        return new Date(b.listedAt).getTime() - new Date(a.listedAt).getTime();
+      });
+    } else if (activeTab === "recent") {
       list = [...list].sort(
         (a, b) => new Date(b.listedAt).getTime() - new Date(a.listedAt).getTime()
       );
