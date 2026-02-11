@@ -1,7 +1,7 @@
 import { defineChain } from "viem";
 
 export const domaMainnet = defineChain({
-  id: 18_18,
+  id: 97_477,
   name: "Doma",
   nativeCurrency: {
     name: "Ether",
