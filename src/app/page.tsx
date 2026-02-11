@@ -123,7 +123,7 @@ function VoteCard({
   );
 }
 
-type SectionTab = "all" | "recent" | "most-voted";
+type SectionTab = "all" | "recent" | "mooning" | "dying";
 
 export default function HomePage() {
   const { address, isConnected } = useAccount();
@@ -195,12 +195,21 @@ export default function HomePage() {
     }
 
     // Apply tab sorting/filtering
-    if (activeTab === "recent") {
+    if (activeTab === "all") {
+      list = [...list].sort((a, b) => {
+        const aVotes = a.moonCount + a.deadCount;
+        const bVotes = b.moonCount + b.deadCount;
+        if (bVotes !== aVotes) return bVotes - aVotes;
+        return new Date(b.listedAt).getTime() - new Date(a.listedAt).getTime();
+      });
+    } else if (activeTab === "recent") {
       list = [...list].sort(
         (a, b) => new Date(b.listedAt).getTime() - new Date(a.listedAt).getTime()
       );
-    } else if (activeTab === "most-voted") {
-      list = [...list].sort((a, b) => b.totalVotes - a.totalVotes);
+    } else if (activeTab === "mooning") {
+      list = [...list].sort((a, b) => b.moonCount - a.moonCount);
+    } else if (activeTab === "dying") {
+      list = [...list].sort((a, b) => b.deadCount - a.deadCount);
     }
 
     return list;
@@ -209,7 +218,8 @@ export default function HomePage() {
   const tabs: { key: SectionTab; label: string }[] = [
     { key: "all", label: "All" },
     { key: "recent", label: "Recently Listed" },
-    { key: "most-voted", label: "Most Voted" },
+    { key: "mooning", label: "Mooning 🚀" },
+    { key: "dying", label: "Dying 💀" },
   ];
 
   return (
@@ -218,7 +228,7 @@ export default function HomePage() {
         <div>
           <h1 className="text-3xl font-bold text-white">Vote</h1>
           <p className="mt-2 text-zinc-400">
-            Will it send? Vote 🚀 moon or 💀 dead on listed domains.
+            Will it moon? Vote 🚀 moon or 💀 dead on listed domains.
           </p>
         </div>
         {isConnected && (
