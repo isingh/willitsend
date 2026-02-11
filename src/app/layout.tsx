@@ -4,9 +4,9 @@ import { Header } from "@/components/Header";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Will It Moon - Doma Domain NFT Viewer",
+  title: "Will it Moon - Vote for your favorite Doma Domains",
   description:
-    "Connect your wallet to view and manage your tokenized domain NFTs on the Doma chain.",
+    "Connect your wallet to vote on your favorite doma domains",
 };
 
 export default function RootLayout({
