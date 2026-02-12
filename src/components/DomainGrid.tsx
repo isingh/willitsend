@@ -59,6 +59,27 @@ export function DomainGrid() {
     }
   }
 
+  const totalItems = domains?.length ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const paginatedDomains = useMemo(() => {
+    if (!domains) return [];
+    const start = (safePage - 1) * pageSize;
+    return domains.slice(start, start + pageSize);
+  }, [domains, safePage, pageSize]);
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1);
+  };
+
   if (!isConnected) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
@@ -126,25 +147,6 @@ export function DomainGrid() {
       </div>
     );
   }
-
-  const totalPages = Math.max(1, Math.ceil(domains.length / pageSize));
-  const safePage = Math.min(currentPage, totalPages);
-
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
-  }, [currentPage, totalPages]);
-
-  const paginatedDomains = useMemo(() => {
-    const start = (safePage - 1) * pageSize;
-    return domains.slice(start, start + pageSize);
-  }, [domains, safePage, pageSize]);
-
-  const handlePageSizeChange = (size: number) => {
-    setPageSize(size);
-    setCurrentPage(1);
-  };
 
   return (
     <div>
