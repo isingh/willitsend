@@ -1,9 +1,11 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { useAccount } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDomainNFTs } from "@/lib/doma";
 import { DomainCard } from "./DomainCard";
+import { Pagination } from "./Pagination";
 import type { ListedDomainInfo } from "./DomainCard";
 
 interface ListedDomainRow {
@@ -19,6 +21,8 @@ interface ListedDomainRow {
 
 export function DomainGrid() {
   const { address, isConnected } = useAccount();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
 
   const { data: domains, isLoading } = useQuery({
     queryKey: ["domains", address],
@@ -123,6 +127,22 @@ export function DomainGrid() {
     );
   }
 
+  const totalPages = Math.max(1, Math.ceil(domains.length / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+  if (safePage !== currentPage) {
+    queueMicrotask(() => setCurrentPage(safePage));
+  }
+
+  const paginatedDomains = useMemo(() => {
+    const start = (safePage - 1) * pageSize;
+    return domains.slice(start, start + pageSize);
+  }, [domains, safePage, pageSize]);
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1);
+  };
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -134,7 +154,7 @@ export function DomainGrid() {
         </h2>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {domains.map((domain) => (
+        {paginatedDomains.map((domain) => (
           <DomainCard
             key={domain.id}
             domain={domain}
@@ -142,6 +162,13 @@ export function DomainGrid() {
           />
         ))}
       </div>
+      <Pagination
+        totalItems={domains.length}
+        currentPage={safePage}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={handlePageSizeChange}
+      />
     </div>
   );
 }

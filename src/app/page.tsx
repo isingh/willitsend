@@ -2,8 +2,9 @@
 
 import { useAccount } from "wagmi";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
+import { Pagination } from "@/components/Pagination";
 
 interface ListedDomain {
   id: number;
@@ -157,6 +158,23 @@ export default function HomePage() {
   const [votingId, setVotingId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<SectionTab>("all");
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
+
+  const handleTabChange = useCallback((tab: SectionTab) => {
+    setActiveTab(tab);
+    setCurrentPage(1);
+  }, []);
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearch(value);
+    setCurrentPage(1);
+  }, []);
+
+  const handlePageSizeChange = useCallback((size: number) => {
+    setPageSize(size);
+    setCurrentPage(1);
+  }, []);
 
   const { data: domains, isLoading } = useQuery<ListedDomain[]>({
     queryKey: ["listed-domains", address],
@@ -240,6 +258,19 @@ export default function HomePage() {
 
     return list;
   }, [domains, search, activeTab]);
+
+  // Clamp page if filtered results shrink below current page
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+  if (safePage !== currentPage) {
+    // Use queueMicrotask to avoid setState during render
+    queueMicrotask(() => setCurrentPage(safePage));
+  }
+
+  const paginatedDomains = useMemo(() => {
+    const start = (safePage - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, safePage, pageSize]);
 
   const tabs: { key: SectionTab; label: string }[] = [
     { key: "all", label: "All" },
@@ -335,7 +366,7 @@ export default function HomePage() {
               {tabs.map((tab) => (
                 <button
                   key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
+                  onClick={() => handleTabChange(tab.key)}
                   className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                     activeTab === tab.key
                       ? "bg-zinc-800 text-white"
@@ -364,7 +395,7 @@ export default function HomePage() {
                 type="text"
                 placeholder="Search domains..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="w-full rounded-lg border border-white/10 bg-zinc-900 py-2 pl-9 pr-4 text-sm text-white placeholder-zinc-500 outline-none transition-colors focus:border-indigo-500/50 sm:w-64"
               />
             </div>
@@ -377,16 +408,25 @@ export default function HomePage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((domain) => (
-                <VoteCard
-                  key={domain.id}
-                  domain={domain}
-                  onVote={handleVote}
-                  isVoting={votingId === domain.id}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {paginatedDomains.map((domain) => (
+                  <VoteCard
+                    key={domain.id}
+                    domain={domain}
+                    onVote={handleVote}
+                    isVoting={votingId === domain.id}
+                  />
+                ))}
+              </div>
+              <Pagination
+                totalItems={filtered.length}
+                currentPage={safePage}
+                pageSize={pageSize}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={handlePageSizeChange}
+              />
+            </>
           )}
         </>
       )}
