@@ -2,7 +2,7 @@
 
 import { useAccount } from "wagmi";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { Pagination } from "@/components/Pagination";
 
@@ -262,10 +262,12 @@ export default function HomePage() {
   // Clamp page if filtered results shrink below current page
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(currentPage, totalPages);
-  if (safePage !== currentPage) {
-    // Use queueMicrotask to avoid setState during render
-    queueMicrotask(() => setCurrentPage(safePage));
-  }
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   const paginatedDomains = useMemo(() => {
     const start = (safePage - 1) * pageSize;

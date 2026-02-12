@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDomainNFTs } from "@/lib/doma";
@@ -129,9 +129,12 @@ export function DomainGrid() {
 
   const totalPages = Math.max(1, Math.ceil(domains.length / pageSize));
   const safePage = Math.min(currentPage, totalPages);
-  if (safePage !== currentPage) {
-    queueMicrotask(() => setCurrentPage(safePage));
-  }
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   const paginatedDomains = useMemo(() => {
     const start = (safePage - 1) * pageSize;
