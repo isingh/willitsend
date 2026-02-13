@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { AddressDisplay } from "@/components/AddressDisplay";
 
 interface DomainDetail {
   id: number;
@@ -16,11 +17,6 @@ interface DomainDetail {
   deadCount: number;
   totalVotes: number;
   myVote: string | null | undefined;
-}
-
-function truncateAddress(addr: string) {
-  if (addr.length <= 12) return addr;
-  return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 }
 
 function timeAgo(dateStr: string) {
@@ -165,9 +161,11 @@ export default function DomainSharePage() {
               <h1 className="text-2xl font-bold text-white">
                 {domain.domainName}
               </h1>
-              <p className="mt-1 font-mono text-sm text-zinc-500">
-                Owned by {truncateAddress(domain.ownerAddress)}
-              </p>
+              <AddressDisplay
+                address={domain.ownerAddress}
+                label="Owned by"
+                className="mt-1 text-sm text-zinc-500"
+              />
             </div>
             <button
               onClick={handleCopyLink}
