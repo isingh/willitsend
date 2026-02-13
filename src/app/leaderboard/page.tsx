@@ -116,7 +116,8 @@ export default function LeaderboardPage() {
                       </Link>
                       <AddressDisplay
                         address={entry.ownerAddress}
-                        className="text-xs text-zinc-500"
+                        label="Owned by"
+                        className="mt-1 block text-xs text-zinc-500"
                       />
                     </div>
                   </td>
