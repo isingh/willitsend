@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { AddressDisplay } from "@/components/AddressDisplay";
 
 interface LeaderboardEntry {
@@ -107,13 +108,19 @@ export default function LeaderboardPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div>
-                      <p className="font-medium text-white">
+                      <Link
+                        href={`/domain/${encodeURIComponent(entry.domainName)}`}
+                        className="font-medium text-white transition-colors hover:text-indigo-400"
+                      >
                         {entry.domainName}
-                      </p>
-                      <AddressDisplay
-                        address={entry.ownerAddress}
-                        className="text-xs text-zinc-500"
-                      />
+                      </Link>
+                      <div className="mt-1">
+                        <AddressDisplay
+                          address={entry.ownerAddress}
+                          label="Owned by"
+                          className="text-xs text-zinc-500"
+                        />
+                      </div>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-center text-sm text-green-400">

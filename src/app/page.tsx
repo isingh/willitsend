@@ -2,8 +2,9 @@
 
 import { useAccount } from "wagmi";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Pagination } from "@/components/Pagination";
 import { AddressDisplay } from "@/components/AddressDisplay";
 
@@ -150,19 +151,45 @@ function VoteCard({
 
 type SectionTab = "all" | "recent" | "mooning" | "dying";
 
+const VALID_TABS: SectionTab[] = ["all", "recent", "mooning", "dying"];
+
+function isValidTab(value: string | null): value is SectionTab {
+  return value !== null && VALID_TABS.includes(value as SectionTab);
+}
+
 export default function HomePage() {
+  return (
+    <Suspense>
+      <HomePageContent />
+    </Suspense>
+  );
+}
+
+function HomePageContent() {
   const { address, isConnected } = useAccount();
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [votingId, setVotingId] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<SectionTab>("all");
+
+  const tabParam = searchParams.get("tab");
+  const activeTab: SectionTab = isValidTab(tabParam) ? tabParam : "all";
+
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
 
   const handleTabChange = useCallback((tab: SectionTab) => {
-    setActiveTab(tab);
+    const params = new URLSearchParams(searchParams.toString());
+    if (tab === "all") {
+      params.delete("tab");
+    } else {
+      params.set("tab", tab);
+    }
+    const query = params.toString();
+    router.push(query ? `/?${query}` : "/", { scroll: false });
     setCurrentPage(1);
-  }, []);
+  }, [searchParams, router]);
 
   const handleSearchChange = useCallback((value: string) => {
     setSearch(value);
