@@ -44,6 +44,14 @@ export async function GET(
       myVote = voteRows.length > 0 ? (voteRows[0].vote_type as string) : null;
     }
 
+    // Fetch individual votes ordered by most recent first
+    const votesList = await sql`
+      SELECT voter_address, vote_type, voted_at
+      FROM votes
+      WHERE domain_id = ${row.id}
+      ORDER BY voted_at DESC
+    `;
+
     return NextResponse.json({
       id: row.id,
       domainName: row.domain_name,
@@ -54,6 +62,11 @@ export async function GET(
       deadCount: row.dead_count,
       totalVotes: row.total_votes,
       myVote,
+      votes: votesList.map((v) => ({
+        voterAddress: v.voter_address,
+        voteType: v.vote_type,
+        votedAt: v.voted_at,
+      })),
     });
   } catch (err) {
     console.error("[domains/name] Failed:", err);
