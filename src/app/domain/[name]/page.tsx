@@ -7,6 +7,12 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { AddressDisplay } from "@/components/AddressDisplay";
 
+interface Vote {
+  voterAddress: string;
+  voteType: "moon" | "dead";
+  votedAt: string;
+}
+
 interface DomainDetail {
   id: number;
   domainName: string;
@@ -17,6 +23,7 @@ interface DomainDetail {
   deadCount: number;
   totalVotes: number;
   myVote: string | null | undefined;
+  votes: Vote[];
 }
 
 function timeAgo(dateStr: string) {
@@ -296,6 +303,38 @@ export default function DomainSharePage() {
           )}
         </div>
       </div>
+
+      {/* Voters list */}
+      {domain.votes.length > 0 && (
+        <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900">
+          <div className="border-b border-white/5 px-6 py-4">
+            <h2 className="text-sm font-semibold text-white">
+              Votes ({domain.votes.length})
+            </h2>
+          </div>
+          <ul className="divide-y divide-white/5">
+            {domain.votes.map((vote) => (
+              <li
+                key={vote.voterAddress}
+                className="flex items-center justify-between px-6 py-3"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-base">
+                    {vote.voteType === "moon" ? "🚀" : "💀"}
+                  </span>
+                  <AddressDisplay
+                    address={vote.voterAddress}
+                    className="text-sm text-zinc-300"
+                  />
+                </div>
+                <span className="text-xs text-zinc-500">
+                  {timeAgo(vote.votedAt)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
