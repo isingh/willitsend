@@ -11,7 +11,7 @@ const EXPLORER_URL = "https://explorer.doma.xyz";
 
 const ensClient = createPublicClient({
   chain: addEnsContracts(mainnet),
-  transport: http(),
+  transport: http("https://rpc.ankr.com/eth"),
 });
 
 function truncateAddress(addr: string) {
