@@ -2,66 +2,33 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { usePublicClient } from "wagmi";
-import { namehash, zeroAddress, type PublicClient } from "viem";
+import { createPublicClient, http, type Address } from "viem";
+import { mainnet } from "viem/chains";
+import { addEnsContracts } from "@ensdomains/ensjs";
+import { getName } from "@ensdomains/ensjs/public";
 
 const EXPLORER_URL = "https://explorer.doma.xyz";
 
-const ENS_REGISTRY = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e" as const;
-
-const ensRegistryAbi = [
-  {
-    name: "resolver",
-    type: "function",
-    stateMutability: "view",
-    inputs: [{ name: "node", type: "bytes32" }],
-    outputs: [{ name: "", type: "address" }],
-  },
-] as const;
-
-const resolverAbi = [
-  {
-    name: "name",
-    type: "function",
-    stateMutability: "view",
-    inputs: [{ name: "node", type: "bytes32" }],
-    outputs: [{ name: "", type: "string" }],
-  },
-] as const;
+const ensClient = createPublicClient({
+  chain: addEnsContracts(mainnet),
+  transport: http(),
+});
 
 function truncateAddress(addr: string) {
   if (addr.length <= 12) return addr;
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 }
 
-async function resolveEnsName(
-  client: PublicClient,
-  address: string
-): Promise<string | null> {
+async function resolveEnsName(address: string): Promise<string | null> {
   try {
-    const node = namehash(
-      `${address.toLowerCase().slice(2)}.addr.reverse`
-    );
-
-    const resolverAddress = await client.readContract({
-      address: ENS_REGISTRY,
-      abi: ensRegistryAbi,
-      functionName: "resolver",
-      args: [node],
+    const result = await getName(ensClient, {
+      address: address as Address,
     });
 
-    if (!resolverAddress || resolverAddress === zeroAddress) {
-      return null;
+    if (result?.name && result?.match) {
+      return result.name;
     }
-
-    const name = await client.readContract({
-      address: resolverAddress,
-      abi: resolverAbi,
-      functionName: "name",
-      args: [node],
-    });
-
-    return name || null;
+    return null;
   } catch {
     return null;
   }
@@ -77,13 +44,12 @@ export function AddressDisplay({
   className?: string;
 }) {
   const [copied, setCopied] = useState(false);
-  const client = usePublicClient();
 
   const { data: ensName } = useQuery({
     queryKey: ["ens-name", address.toLowerCase()],
-    queryFn: () => resolveEnsName(client!, address),
+    queryFn: () => resolveEnsName(address),
     staleTime: 5 * 60_000,
-    enabled: !!address && !!client,
+    enabled: !!address,
   });
 
   const handleCopy = (e: React.MouseEvent) => {
