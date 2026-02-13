@@ -86,6 +86,7 @@ function VoteCard({
 
         <AddressDisplay
           address={domain.ownerAddress}
+          label="Owned by"
           className="mt-1 text-xs text-zinc-500"
         />
 
