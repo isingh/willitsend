@@ -2,49 +2,66 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { usePublicClient } from "wagmi";
+import { namehash, zeroAddress, type PublicClient } from "viem";
 
 const EXPLORER_URL = "https://explorer.doma.xyz";
-const DOMA_API_URL =
-  process.env.NEXT_PUBLIC_DOMA_SUBGRAPH_URL || "https://api.doma.xyz/graphql";
-const DOMA_API_KEY = process.env.NEXT_PUBLIC_DOMA_API_KEY || "";
-const DOMA_CAIP2_NETWORK_ID = "eip155:97477";
+
+const ENS_REGISTRY = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e" as const;
+
+const ensRegistryAbi = [
+  {
+    name: "resolver",
+    type: "function",
+    stateMutability: "view",
+    inputs: [{ name: "node", type: "bytes32" }],
+    outputs: [{ name: "", type: "address" }],
+  },
+] as const;
+
+const resolverAbi = [
+  {
+    name: "name",
+    type: "function",
+    stateMutability: "view",
+    inputs: [{ name: "node", type: "bytes32" }],
+    outputs: [{ name: "", type: "string" }],
+  },
+] as const;
 
 function truncateAddress(addr: string) {
   if (addr.length <= 12) return addr;
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 }
 
-async function fetchPrimaryDomaName(
+async function resolveEnsName(
+  client: PublicClient,
   address: string
 ): Promise<string | null> {
-  const caip10Address = `${DOMA_CAIP2_NETWORK_ID}:${address}`;
-
-  const query = `
-    query GetPrimaryName($ownedBy: [AddressCAIP10!]) {
-      names(ownedBy: $ownedBy, take: 1) {
-        items {
-          name
-        }
-      }
-    }
-  `;
-
   try {
-    const res = await fetch(DOMA_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(DOMA_API_KEY ? { "Api-Key": DOMA_API_KEY } : {}),
-      },
-      body: JSON.stringify({
-        query,
-        variables: { ownedBy: [caip10Address] },
-      }),
+    const node = namehash(
+      `${address.toLowerCase().slice(2)}.addr.reverse`
+    );
+
+    const resolverAddress = await client.readContract({
+      address: ENS_REGISTRY,
+      abi: ensRegistryAbi,
+      functionName: "resolver",
+      args: [node],
     });
 
-    if (!res.ok) return null;
-    const json = await res.json();
-    return json.data?.names?.items?.[0]?.name ?? null;
+    if (!resolverAddress || resolverAddress === zeroAddress) {
+      return null;
+    }
+
+    const name = await client.readContract({
+      address: resolverAddress,
+      abi: resolverAbi,
+      functionName: "name",
+      args: [node],
+    });
+
+    return name || null;
   } catch {
     return null;
   }
@@ -60,12 +77,13 @@ export function AddressDisplay({
   className?: string;
 }) {
   const [copied, setCopied] = useState(false);
+  const client = usePublicClient();
 
-  const { data: domaName } = useQuery({
-    queryKey: ["doma-name", address.toLowerCase()],
-    queryFn: () => fetchPrimaryDomaName(address),
+  const { data: ensName } = useQuery({
+    queryKey: ["ens-name", address.toLowerCase()],
+    queryFn: () => resolveEnsName(client!, address),
     staleTime: 5 * 60_000,
-    enabled: !!address,
+    enabled: !!address && !!client,
   });
 
   const handleCopy = (e: React.MouseEvent) => {
@@ -77,7 +95,7 @@ export function AddressDisplay({
   };
 
   const explorerUrl = `${EXPLORER_URL}/address/${address}`;
-  const displayText = domaName || truncateAddress(address);
+  const displayText = ensName || truncateAddress(address);
 
   return (
     <span className={`inline-flex items-center gap-1.5 ${className}`}>
