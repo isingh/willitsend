@@ -2,17 +2,8 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { createPublicClient, http, type Address } from "viem";
-import { mainnet } from "viem/chains";
-import { addEnsContracts } from "@ensdomains/ensjs";
-import { getName } from "@ensdomains/ensjs/public";
 
 const EXPLORER_URL = "https://explorer.doma.xyz";
-
-const ensClient = createPublicClient({
-  chain: addEnsContracts(mainnet),
-  transport: http("https://rpc.ankr.com/eth"),
-});
 
 function truncateAddress(addr: string) {
   if (addr.length <= 12) return addr;
@@ -21,14 +12,10 @@ function truncateAddress(addr: string) {
 
 async function resolveEnsName(address: string): Promise<string | null> {
   try {
-    const result = await getName(ensClient, {
-      address: address as Address,
-    });
-
-    if (result?.name && result?.match) {
-      return result.name;
-    }
-    return null;
+    const res = await fetch(`/api/ens?address=${encodeURIComponent(address)}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.name ?? null;
   } catch {
     return null;
   }
