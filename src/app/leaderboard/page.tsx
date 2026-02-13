@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { AddressDisplay } from "@/components/AddressDisplay";
 
 interface LeaderboardEntry {
   rank: number;
@@ -11,11 +12,6 @@ interface LeaderboardEntry {
   deadCount: number;
   totalVotes: number;
   score: number;
-}
-
-function truncateAddress(addr: string) {
-  if (addr.length <= 12) return addr;
-  return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 }
 
 export default function LeaderboardPage() {
@@ -114,9 +110,10 @@ export default function LeaderboardPage() {
                       <p className="font-medium text-white">
                         {entry.domainName}
                       </p>
-                      <p className="text-xs text-zinc-500">
-                        {truncateAddress(entry.ownerAddress)}
-                      </p>
+                      <AddressDisplay
+                        address={entry.ownerAddress}
+                        className="text-xs text-zinc-500"
+                      />
                     </div>
                   </td>
                   <td className="px-4 py-3 text-center text-sm text-green-400">

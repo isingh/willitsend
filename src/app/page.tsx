@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { Pagination } from "@/components/Pagination";
+import { AddressDisplay } from "@/components/AddressDisplay";
 
 interface ListedDomain {
   id: number;
@@ -16,11 +17,6 @@ interface ListedDomain {
   deadCount: number;
   totalVotes: number;
   myVote: string | null | undefined;
-}
-
-function truncateAddress(addr: string) {
-  if (addr.length <= 12) return addr;
-  return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 }
 
 function timeAgo(dateStr: string) {
@@ -88,9 +84,10 @@ function VoteCard({
           </div>
         </div>
 
-        <p className="mt-1 font-mono text-xs text-zinc-500">
-          {truncateAddress(domain.ownerAddress)}
-        </p>
+        <AddressDisplay
+          address={domain.ownerAddress}
+          className="mt-1 text-xs text-zinc-500"
+        />
 
         {/* Vote bar */}
         {total > 0 && (
