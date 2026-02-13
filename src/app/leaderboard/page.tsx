@@ -114,11 +114,13 @@ export default function LeaderboardPage() {
                       >
                         {entry.domainName}
                       </Link>
-                      <AddressDisplay
-                        address={entry.ownerAddress}
-                        label="Owned by"
-                        className="mt-1 block text-xs text-zinc-500"
-                      />
+                      <div className="mt-1">
+                        <AddressDisplay
+                          address={entry.ownerAddress}
+                          label="Owned by"
+                          className="text-xs text-zinc-500"
+                        />
+                      </div>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-center text-sm text-green-400">
