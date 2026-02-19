@@ -1,19 +1,12 @@
 {
   "defaultWeight": 1,
+  "tokenlistUrl": "https://cdn.doma.xyz/tokenlist.json",
   "rules": [
     {
       "id": "doma-token-holder",
       "description": "Hold any Doma ecosystem token",
       "weight": 2,
       "condition": "any",
-      "tokens": [
-        {
-          "address": "0x4200000000000000000000000000000000000006",
-          "name": "Wrapped Ether",
-          "symbol": "WETH",
-          "decimals": 18
-        }
-      ],
       "minBalance": "0.0001"
     }
   ]
