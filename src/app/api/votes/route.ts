@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { getVotingPower } from "@/lib/voting-power";
 
 export async function POST(req: NextRequest) {
   try {
@@ -40,12 +41,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Upsert the vote (allows changing your vote)
+    // Calculate voting power based on token holdings
+    const { weight } = await getVotingPower(voterAddress);
+
+    // Upsert the vote (allows changing your vote), recalculating weight each time
     const rows = await sql`
-      INSERT INTO votes (domain_id, voter_address, vote_type)
-      VALUES (${domainId}, ${voterAddress.toLowerCase()}, ${voteType})
+      INSERT INTO votes (domain_id, voter_address, vote_type, vote_weight)
+      VALUES (${domainId}, ${voterAddress.toLowerCase()}, ${voteType}, ${weight})
       ON CONFLICT (domain_id, voter_address)
-      DO UPDATE SET vote_type = ${voteType}, voted_at = NOW()
+      DO UPDATE SET vote_type = ${voteType}, vote_weight = ${weight}, voted_at = NOW()
       RETURNING *
     `;
 

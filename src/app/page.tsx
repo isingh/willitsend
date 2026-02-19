@@ -20,6 +20,19 @@ interface ListedDomain {
   myVote: string | null | undefined;
 }
 
+interface VotingPowerRule {
+  id: string;
+  description: string;
+  weight: number;
+  tokens: { name: string; symbol: string }[];
+}
+
+interface VotingPowerData {
+  weight: number;
+  matchedRule: { id: string; description: string; weight: number } | null;
+  rules: VotingPowerRule[];
+}
+
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
   const minutes = Math.floor(diff / 60000);
@@ -212,6 +225,17 @@ function HomePageContent() {
     staleTime: 10_000,
   });
 
+  const { data: votingPower } = useQuery<VotingPowerData>({
+    queryKey: ["voting-power", address],
+    queryFn: async () => {
+      const res = await fetch(`/api/voting-power?address=${address}`);
+      if (!res.ok) throw new Error("Failed to fetch voting power");
+      return res.json();
+    },
+    enabled: isConnected && !!address,
+    staleTime: 60_000,
+  });
+
   const voteMutation = useMutation({
     mutationFn: async ({
       domainId,
@@ -341,6 +365,51 @@ function HomePageContent() {
       {voteMutation.error && (
         <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
           {voteMutation.error.message}
+        </div>
+      )}
+
+      {/* Voting Power Banner */}
+      {isConnected && votingPower && (
+        <div className={`mb-4 rounded-lg border px-4 py-3 ${
+          votingPower.weight > 1
+            ? "border-indigo-500/30 bg-indigo-500/10"
+            : "border-white/10 bg-zinc-900"
+        }`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {votingPower.weight > 1 ? (
+                <>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500/20 text-sm font-bold text-indigo-400">
+                    {votingPower.weight}x
+                  </span>
+                  <div>
+                    <p className="text-sm font-medium text-indigo-300">
+                      Your votes count as {votingPower.weight}
+                    </p>
+                    <p className="text-xs text-indigo-400/70">
+                      {votingPower.matchedRule?.description}
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-800 text-sm font-medium text-zinc-400">
+                    1x
+                  </span>
+                  <div>
+                    <p className="text-sm font-medium text-zinc-300">
+                      Boost your voting power
+                    </p>
+                    <p className="text-xs text-zinc-500">
+                      {votingPower.rules.length > 0
+                        ? `${votingPower.rules[0].description} for ${votingPower.rules[0].weight}x power`
+                        : "Hold Doma ecosystem tokens to multiply your votes"}
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       )}
 

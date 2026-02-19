@@ -10,7 +10,14 @@ import { AddressDisplay } from "@/components/AddressDisplay";
 interface Vote {
   voterAddress: string;
   voteType: "moon" | "dead";
+  voteWeight: number;
   votedAt: string;
+}
+
+interface VotingPowerData {
+  weight: number;
+  matchedRule: { id: string; description: string; weight: number } | null;
+  rules: { id: string; description: string; weight: number; tokens: { name: string; symbol: string }[] }[];
 }
 
 interface DomainDetail {
@@ -64,6 +71,17 @@ export default function DomainSharePage() {
       if (!res.ok) throw new Error("Failed to fetch domain");
       return res.json();
     },
+  });
+
+  const { data: votingPower } = useQuery<VotingPowerData>({
+    queryKey: ["voting-power", address],
+    queryFn: async () => {
+      const res = await fetch(`/api/voting-power?address=${address}`);
+      if (!res.ok) throw new Error("Failed to fetch voting power");
+      return res.json();
+    },
+    enabled: isConnected && !!address,
+    staleTime: 60_000,
   });
 
   const voteMutation = useMutation({
@@ -260,9 +278,42 @@ export default function DomainSharePage() {
             </div>
           )}
 
+          {/* Voting Power Banner */}
+          {isConnected && votingPower && (
+            <div className={`mt-4 rounded-lg border px-3 py-2 ${
+              votingPower.weight > 1
+                ? "border-indigo-500/30 bg-indigo-500/10"
+                : "border-white/10 bg-zinc-800/50"
+            }`}>
+              <div className="flex items-center gap-2">
+                {votingPower.weight > 1 ? (
+                  <>
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500/20 text-xs font-bold text-indigo-400">
+                      {votingPower.weight}x
+                    </span>
+                    <p className="text-xs text-indigo-300">
+                      Your vote counts as {votingPower.weight} &middot; {votingPower.matchedRule?.description}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-700 text-xs font-medium text-zinc-400">
+                      1x
+                    </span>
+                    <p className="text-xs text-zinc-500">
+                      {votingPower.rules.length > 0
+                        ? `${votingPower.rules[0].description} for ${votingPower.rules[0].weight}x voting power`
+                        : "Hold Doma ecosystem tokens to boost your vote"}
+                    </p>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Vote buttons or connect prompt */}
           {isConnected ? (
-            <div className="mt-6 flex gap-3">
+            <div className="mt-4 flex gap-3">
               <button
                 onClick={() => handleVote("moon")}
                 disabled={isVoting}
@@ -326,6 +377,11 @@ export default function DomainSharePage() {
                     address={vote.voterAddress}
                     className="text-sm text-zinc-300"
                   />
+                  {vote.voteWeight > 1 && (
+                    <span className="rounded-full bg-indigo-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-400">
+                      {vote.voteWeight}x
+                    </span>
+                  )}
                 </div>
                 <span className="text-xs text-zinc-500">
                   {timeAgo(vote.votedAt)}
