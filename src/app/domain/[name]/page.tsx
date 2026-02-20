@@ -6,6 +6,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { AddressDisplay } from "@/components/AddressDisplay";
+import { VotingPowerMeter } from "@/components/VotingPowerMeter";
 
 interface Vote {
   voterAddress: string;
@@ -17,7 +18,7 @@ interface Vote {
 interface VotingPowerData {
   weight: number;
   matchedRule: { id: string; description: string; weight: number } | null;
-  rules: { id: string; description: string; weight: number; tokens: { name: string; symbol: string }[] }[];
+  rules: { id: string; description: string; weight: number; minBalance?: string; tokens: { name: string; symbol: string }[] }[];
 }
 
 interface DomainDetail {
@@ -278,37 +279,9 @@ export default function DomainSharePage() {
             </div>
           )}
 
-          {/* Voting Power Banner */}
+          {/* Voting Power Progression */}
           {isConnected && votingPower && (
-            <div className={`mt-4 rounded-xl border px-3 py-2.5 ${
-              votingPower.weight > 1
-                ? "border-indigo-500/30 bg-indigo-500/10"
-                : "border-white/10 bg-zinc-800/50"
-            }`}>
-              <div className="flex items-center gap-2.5">
-                {votingPower.weight > 1 ? (
-                  <>
-                    <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-indigo-500/20 text-xs font-bold text-indigo-400">
-                      {votingPower.weight}x
-                    </span>
-                    <p className="min-w-0 truncate text-xs text-indigo-300">
-                      Your vote counts as {votingPower.weight} &middot; {votingPower.matchedRule?.description}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-zinc-700 text-xs font-medium text-zinc-400">
-                      1x
-                    </span>
-                    <p className="min-w-0 truncate text-xs text-zinc-500">
-                      {votingPower.rules.length > 0
-                        ? `${votingPower.rules[0].description} for ${votingPower.rules[0].weight}x voting power`
-                        : "Hold Doma ecosystem tokens to boost your vote"}
-                    </p>
-                  </>
-                )}
-              </div>
-            </div>
+            <VotingPowerMeter votingPower={votingPower} compact />
           )}
 
           {/* Vote buttons or connect prompt */}

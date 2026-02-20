@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Pagination } from "@/components/Pagination";
 import { AddressDisplay } from "@/components/AddressDisplay";
+import { VotingPowerMeter } from "@/components/VotingPowerMeter";
 
 interface ListedDomain {
   id: number;
@@ -24,6 +25,7 @@ interface VotingPowerRule {
   id: string;
   description: string;
   weight: number;
+  minBalance?: string;
   tokens: { name: string; symbol: string }[];
 }
 
@@ -368,47 +370,9 @@ function HomePageContent() {
         </div>
       )}
 
-      {/* Voting Power Banner */}
+      {/* Voting Power Progression */}
       {isConnected && votingPower && (
-        <div className={`mb-4 rounded-xl border px-4 py-3 ${
-          votingPower.weight > 1
-            ? "border-indigo-500/30 bg-indigo-500/10"
-            : "border-white/10 bg-zinc-900"
-        }`}>
-          <div className="flex items-center gap-3">
-            {votingPower.weight > 1 ? (
-              <>
-                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-indigo-500/20 text-sm font-bold text-indigo-400">
-                  {votingPower.weight}x
-                </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-indigo-300">
-                    Your votes count as {votingPower.weight}
-                  </p>
-                  <p className="truncate text-xs text-indigo-400/70">
-                    {votingPower.matchedRule?.description}
-                  </p>
-                </div>
-              </>
-            ) : (
-              <>
-                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-zinc-800 text-sm font-medium text-zinc-400">
-                  1x
-                </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-zinc-300">
-                    Boost your voting power
-                  </p>
-                  <p className="truncate text-xs text-zinc-500">
-                    {votingPower.rules.length > 0
-                      ? `${votingPower.rules[0].description} for ${votingPower.rules[0].weight}x power`
-                      : "Hold Doma ecosystem tokens to multiply your votes"}
-                  </p>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
+        <VotingPowerMeter votingPower={votingPower} />
       )}
 
       {!isConnected && (
