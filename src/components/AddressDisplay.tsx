@@ -64,7 +64,7 @@ export function AddressDisplay({
       </a>
       <button
         onClick={handleCopy}
-        className="inline-flex text-zinc-600 transition-colors hover:text-zinc-300"
+        className="-m-1.5 inline-flex h-7 w-7 items-center justify-center rounded text-zinc-600 transition-colors active:text-zinc-300 hover:text-zinc-300"
         title={copied ? "Copied!" : "Copy address"}
       >
         {copied ? (

@@ -19,7 +19,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-zinc-950 font-sans antialiased">
         <Providers>
           <Header />
-          <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+          <main className="mobile-shell mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
             {children}
           </main>
         </Providers>

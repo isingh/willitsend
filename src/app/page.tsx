@@ -61,10 +61,10 @@ function VoteCard({
   const moonPct = total > 0 ? Math.round((domain.moonCount / total) * 100) : 50;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-white/10 bg-zinc-900 transition-all hover:border-white/20">
-      <div className="p-5">
-        <div className="flex items-start justify-between">
-          <h3 className="truncate text-lg font-semibold text-white">
+    <div className="overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 transition-all hover:border-white/20">
+      <div className="p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="min-w-0 truncate text-base font-semibold text-white sm:text-lg">
             <Link
               href={`/domain/${encodeURIComponent(domain.domainName)}`}
               className="hover:text-indigo-400 transition-colors"
@@ -72,11 +72,11 @@ function VoteCard({
               {domain.domainName}
             </Link>
           </h3>
-          <div className="ml-2 flex flex-shrink-0 items-center gap-2">
+          <div className="flex flex-shrink-0 items-center gap-2">
             <Link
               href={`/domain/${encodeURIComponent(domain.domainName)}`}
-              className="text-zinc-500 hover:text-white transition-colors"
-              title="Share domain"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-zinc-500 active:bg-zinc-800 hover:text-white transition-colors"
+              title="View details"
             >
               <svg
                 className="h-4 w-4"
@@ -92,7 +92,7 @@ function VoteCard({
                 />
               </svg>
             </Link>
-            <span className="text-xs text-zinc-500">
+            <span className="text-xs text-zinc-500 whitespace-nowrap">
               {timeAgo(domain.listedAt)}
             </span>
           </div>
@@ -101,17 +101,17 @@ function VoteCard({
         <AddressDisplay
           address={domain.ownerAddress}
           label="Owned by"
-          className="mt-1 text-xs text-zinc-500"
+          className="mt-1.5 text-xs text-zinc-500"
         />
 
         {/* Vote bar */}
         {total > 0 && (
-          <div className="mt-3">
+          <div className="mt-4">
             <div className="flex justify-between text-xs text-zinc-500">
               <span>{domain.moonCount} moon</span>
               <span>{domain.deadCount} dead</span>
             </div>
-            <div className="mt-1 flex h-2 overflow-hidden rounded-full bg-zinc-800">
+            <div className="mt-1.5 flex h-2.5 overflow-hidden rounded-full bg-zinc-800">
               <div
                 className="bg-green-500 transition-all"
                 style={{ width: `${moonPct}%` }}
@@ -124,15 +124,15 @@ function VoteCard({
           </div>
         )}
 
-        {/* Vote buttons */}
+        {/* Vote buttons — 48px tall for comfortable thumb tap */}
         <div className="mt-4 flex gap-3">
           <button
             onClick={() => onVote(domain.id, "moon")}
             disabled={isVoting}
-            className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all ${
+            className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all sm:h-11 ${
               domain.myVote === "moon"
                 ? "bg-green-500/20 text-green-400 ring-1 ring-green-500/50"
-                : "bg-zinc-800 text-zinc-300 hover:bg-green-500/10 hover:text-green-400"
+                : "bg-zinc-800 text-zinc-300 active:bg-green-500/10 active:text-green-400 hover:bg-green-500/10 hover:text-green-400"
             } disabled:opacity-50`}
           >
             <span className="text-lg">🚀</span>
@@ -141,10 +141,10 @@ function VoteCard({
           <button
             onClick={() => onVote(domain.id, "dead")}
             disabled={isVoting}
-            className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all ${
+            className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all sm:h-11 ${
               domain.myVote === "dead"
                 ? "bg-red-500/20 text-red-400 ring-1 ring-red-500/50"
-                : "bg-zinc-800 text-zinc-300 hover:bg-red-500/10 hover:text-red-400"
+                : "bg-zinc-800 text-zinc-300 active:bg-red-500/10 active:text-red-400 hover:bg-red-500/10 hover:text-red-400"
             } disabled:opacity-50`}
           >
             <span className="text-lg">💀</span>
@@ -153,7 +153,7 @@ function VoteCard({
         </div>
 
         {domain.myVote && (
-          <p className="mt-2 text-center text-xs text-zinc-500">
+          <p className="mt-2.5 text-center text-xs text-zinc-500">
             You voted {domain.myVote === "moon" ? "🚀 moon" : "💀 dead"}
           </p>
         )}
@@ -325,24 +325,24 @@ function HomePageContent() {
 
   const tabs: { key: SectionTab; label: string }[] = [
     { key: "all", label: "All" },
-    { key: "recent", label: "Recently Listed" },
+    { key: "recent", label: "Recent" },
     { key: "mooning", label: "Mooning 🚀" },
     { key: "dying", label: "Dying 💀" },
   ];
 
   return (
     <div>
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">Vote</h1>
-          <p className="mt-2 text-zinc-400">
-            Will it moon? Vote 🚀 moon or 💀 dead on listed domains.
+          <h1 className="text-2xl font-bold text-white sm:text-3xl">Vote</h1>
+          <p className="mt-1 text-sm text-zinc-400 sm:mt-2 sm:text-base">
+            Will it moon? Vote 🚀 or 💀 on listed domains.
           </p>
         </div>
         {isConnected && (
           <Link
             href="/domains"
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-500/10 px-4 py-2.5 text-sm font-medium text-indigo-400 transition-colors hover:bg-indigo-500/20"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-indigo-500/10 px-4 text-sm font-medium text-indigo-400 transition-colors active:bg-indigo-500/20 hover:bg-indigo-500/20 sm:h-10"
           >
             <svg
               className="h-4 w-4"
@@ -363,60 +363,58 @@ function HomePageContent() {
       </div>
 
       {voteMutation.error && (
-        <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+        <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
           {voteMutation.error.message}
         </div>
       )}
 
       {/* Voting Power Banner */}
       {isConnected && votingPower && (
-        <div className={`mb-4 rounded-lg border px-4 py-3 ${
+        <div className={`mb-4 rounded-xl border px-4 py-3 ${
           votingPower.weight > 1
             ? "border-indigo-500/30 bg-indigo-500/10"
             : "border-white/10 bg-zinc-900"
         }`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {votingPower.weight > 1 ? (
-                <>
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500/20 text-sm font-bold text-indigo-400">
-                    {votingPower.weight}x
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium text-indigo-300">
-                      Your votes count as {votingPower.weight}
-                    </p>
-                    <p className="text-xs text-indigo-400/70">
-                      {votingPower.matchedRule?.description}
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-800 text-sm font-medium text-zinc-400">
-                    1x
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium text-zinc-300">
-                      Boost your voting power
-                    </p>
-                    <p className="text-xs text-zinc-500">
-                      {votingPower.rules.length > 0
-                        ? `${votingPower.rules[0].description} for ${votingPower.rules[0].weight}x power`
-                        : "Hold Doma ecosystem tokens to multiply your votes"}
-                    </p>
-                  </div>
-                </>
-              )}
-            </div>
+          <div className="flex items-center gap-3">
+            {votingPower.weight > 1 ? (
+              <>
+                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-indigo-500/20 text-sm font-bold text-indigo-400">
+                  {votingPower.weight}x
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-indigo-300">
+                    Your votes count as {votingPower.weight}
+                  </p>
+                  <p className="truncate text-xs text-indigo-400/70">
+                    {votingPower.matchedRule?.description}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-zinc-800 text-sm font-medium text-zinc-400">
+                  1x
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-zinc-300">
+                    Boost your voting power
+                  </p>
+                  <p className="truncate text-xs text-zinc-500">
+                    {votingPower.rules.length > 0
+                      ? `${votingPower.rules[0].description} for ${votingPower.rules[0].weight}x power`
+                      : "Hold Doma ecosystem tokens to multiply your votes"}
+                  </p>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
 
       {!isConnected && (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="rounded-2xl border border-white/10 bg-zinc-900 p-10">
-            <h2 className="text-xl font-semibold text-white">
+        <div className="flex flex-col items-center justify-center py-16 text-center sm:py-24">
+          <div className="rounded-2xl border border-white/10 bg-zinc-900 p-8 sm:p-10">
+            <h2 className="text-lg font-semibold text-white sm:text-xl">
               Connect Your Wallet
             </h2>
             <p className="mt-2 max-w-sm text-sm text-zinc-400">
@@ -427,20 +425,20 @@ function HomePageContent() {
       )}
 
       {isConnected && isLoading && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="space-y-3 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="h-44 animate-pulse rounded-xl border border-white/5 bg-zinc-900"
+              className="h-48 animate-pulse rounded-2xl border border-white/5 bg-zinc-900"
             />
           ))}
         </div>
       )}
 
       {isConnected && !isLoading && (!domains || domains.length === 0) && (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="rounded-2xl border border-white/10 bg-zinc-900 p-10">
-            <h2 className="text-xl font-semibold text-white">
+        <div className="flex flex-col items-center justify-center py-16 text-center sm:py-24">
+          <div className="rounded-2xl border border-white/10 bg-zinc-900 p-8 sm:p-10">
+            <h2 className="text-lg font-semibold text-white sm:text-xl">
               No Domains Listed Yet
             </h2>
             <p className="mt-2 max-w-sm text-sm text-zinc-400">
@@ -457,21 +455,24 @@ function HomePageContent() {
       {isConnected && domains && domains.length > 0 && (
         <>
           {/* Search and tabs */}
-          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex gap-1 rounded-lg bg-zinc-900 p-1">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => handleTabChange(tab.key)}
-                  className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                    activeTab === tab.key
-                      ? "bg-zinc-800 text-white"
-                      : "text-zinc-400 hover:text-zinc-300"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+            {/* Horizontally scrollable tab bar on mobile */}
+            <div className="tabs-scroll -mx-4 px-4 sm:mx-0 sm:px-0">
+              <div className="inline-flex gap-1 rounded-xl bg-zinc-900 p-1">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.key}
+                    onClick={() => handleTabChange(tab.key)}
+                    className={`flex h-9 items-center whitespace-nowrap rounded-lg px-3.5 text-sm font-medium transition-colors sm:h-8 sm:px-3 ${
+                      activeTab === tab.key
+                        ? "bg-zinc-800 text-white"
+                        : "text-zinc-400 active:text-zinc-300 hover:text-zinc-300"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="relative">
               <svg
@@ -492,7 +493,7 @@ function HomePageContent() {
                 placeholder="Search domains..."
                 value={search}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                className="w-full rounded-lg border border-white/10 bg-zinc-900 py-2 pl-9 pr-4 text-sm text-white placeholder-zinc-500 outline-none transition-colors focus:border-indigo-500/50 sm:w-64"
+                className="h-11 w-full rounded-xl border border-white/10 bg-zinc-900 pl-9 pr-4 text-sm text-white placeholder-zinc-500 outline-none transition-colors focus:border-indigo-500/50 sm:h-10 sm:w-64"
               />
             </div>
           </div>
@@ -505,7 +506,7 @@ function HomePageContent() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="space-y-3 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0 lg:grid-cols-3">
                 {paginatedDomains.map((domain) => (
                   <VoteCard
                     key={domain.id}

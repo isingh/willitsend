@@ -15,6 +15,40 @@ interface LeaderboardEntry {
   score: number;
 }
 
+function RankBadge({ rank }: { rank: number }) {
+  const style =
+    rank === 1
+      ? "bg-amber-500/20 text-amber-400"
+      : rank === 2
+        ? "bg-zinc-400/20 text-zinc-300"
+        : rank === 3
+          ? "bg-orange-500/20 text-orange-400"
+          : "text-zinc-500";
+
+  return (
+    <span
+      className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${style}`}
+    >
+      {rank}
+    </span>
+  );
+}
+
+function ScoreBadge({ score }: { score: number }) {
+  const color =
+    score > 0
+      ? "text-green-400"
+      : score < 0
+        ? "text-red-400"
+        : "text-zinc-400";
+  return (
+    <span className={`text-sm font-semibold ${color}`}>
+      {score > 0 ? "+" : ""}
+      {score}
+    </span>
+  );
+}
+
 export default function LeaderboardPage() {
   const { data: entries, isLoading } = useQuery<LeaderboardEntry[]>({
     queryKey: ["leaderboard"],
@@ -28,9 +62,9 @@ export default function LeaderboardPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Leaderboard</h1>
-        <p className="mt-2 text-zinc-400">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl font-bold text-white sm:text-3xl">Leaderboard</h1>
+        <p className="mt-1 text-sm text-zinc-400 sm:mt-2 sm:text-base">
           Top domains ranked by community votes. Score = moons - deads.
         </p>
       </div>
@@ -40,15 +74,15 @@ export default function LeaderboardPage() {
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className="h-16 animate-pulse rounded-xl border border-white/5 bg-zinc-900"
+              className="h-20 animate-pulse rounded-2xl border border-white/5 bg-zinc-900 sm:h-16 sm:rounded-xl"
             />
           ))}
         </div>
       )}
 
       {!isLoading && (!entries || entries.length === 0) && (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="rounded-2xl border border-white/10 bg-zinc-900 p-10">
+        <div className="flex flex-col items-center justify-center py-16 text-center sm:py-24">
+          <div className="rounded-2xl border border-white/10 bg-zinc-900 p-8 sm:p-10">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/10">
               <svg
                 className="h-8 w-8 text-amber-400"
@@ -64,7 +98,7 @@ export default function LeaderboardPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-white">No Votes Yet</h2>
+            <h2 className="text-lg font-semibold text-white sm:text-xl">No Votes Yet</h2>
             <p className="mt-2 max-w-sm text-sm text-zinc-400">
               The leaderboard will populate once domains receive votes. Head to
               the Vote page to get started!
@@ -74,80 +108,99 @@ export default function LeaderboardPage() {
       )}
 
       {entries && entries.length > 0 && (
-        <div className="overflow-hidden rounded-xl border border-white/10">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-white/10 bg-zinc-900/50 text-left text-xs uppercase tracking-wider text-zinc-500">
-                <th className="px-4 py-3">#</th>
-                <th className="px-4 py-3">Domain</th>
-                <th className="px-4 py-3 text-center">🚀 Moon</th>
-                <th className="px-4 py-3 text-center">💀 Dead</th>
-                <th className="px-4 py-3 text-right">Score</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {entries.map((entry) => (
-                <tr
-                  key={entry.id}
-                  className="bg-zinc-900 transition-colors hover:bg-zinc-800/50"
-                >
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold ${
-                        entry.rank === 1
-                          ? "bg-amber-500/20 text-amber-400"
-                          : entry.rank === 2
-                            ? "bg-zinc-400/20 text-zinc-300"
-                            : entry.rank === 3
-                              ? "bg-orange-500/20 text-orange-400"
-                              : "text-zinc-500"
-                      }`}
+        <>
+          {/* Mobile: stacked card layout */}
+          <div className="space-y-2 sm:hidden">
+            {entries.map((entry) => (
+              <div
+                key={entry.id}
+                className="rounded-2xl border border-white/10 bg-zinc-900 p-4"
+              >
+                <div className="flex items-center gap-3">
+                  <RankBadge rank={entry.rank} />
+                  <div className="min-w-0 flex-1">
+                    <Link
+                      href={`/domain/${encodeURIComponent(entry.domainName)}`}
+                      className="block truncate text-base font-medium text-white transition-colors hover:text-indigo-400"
                     >
-                      {entry.rank}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div>
-                      <Link
-                        href={`/domain/${encodeURIComponent(entry.domainName)}`}
-                        className="font-medium text-white transition-colors hover:text-indigo-400"
-                      >
-                        {entry.domainName}
-                      </Link>
-                      <div className="mt-1">
-                        <AddressDisplay
-                          address={entry.ownerAddress}
-                          label="Owned by"
-                          className="text-xs text-zinc-500"
-                        />
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-center text-sm text-green-400">
-                    {entry.moonCount}
-                  </td>
-                  <td className="px-4 py-3 text-center text-sm text-red-400">
-                    {entry.deadCount}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <span
-                      className={`text-sm font-semibold ${
-                        entry.score > 0
-                          ? "text-green-400"
-                          : entry.score < 0
-                            ? "text-red-400"
-                            : "text-zinc-400"
-                      }`}
-                    >
-                      {entry.score > 0 ? "+" : ""}
-                      {entry.score}
-                    </span>
-                  </td>
+                      {entry.domainName}
+                    </Link>
+                    <AddressDisplay
+                      address={entry.ownerAddress}
+                      label="by"
+                      className="text-xs text-zinc-500"
+                    />
+                  </div>
+                  <ScoreBadge score={entry.score} />
+                </div>
+                <div className="mt-3 flex items-center gap-4 border-t border-white/5 pt-3">
+                  <span className="text-xs text-green-400">
+                    🚀 {entry.moonCount}
+                  </span>
+                  <span className="text-xs text-red-400">
+                    💀 {entry.deadCount}
+                  </span>
+                  <span className="ml-auto text-xs text-zinc-500">
+                    {entry.totalVotes} vote{entry.totalVotes !== 1 ? "s" : ""}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: table layout */}
+          <div className="hidden overflow-hidden rounded-xl border border-white/10 sm:block">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-white/10 bg-zinc-900/50 text-left text-xs uppercase tracking-wider text-zinc-500">
+                  <th className="px-4 py-3">#</th>
+                  <th className="px-4 py-3">Domain</th>
+                  <th className="px-4 py-3 text-center">🚀 Moon</th>
+                  <th className="px-4 py-3 text-center">💀 Dead</th>
+                  <th className="px-4 py-3 text-right">Score</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {entries.map((entry) => (
+                  <tr
+                    key={entry.id}
+                    className="bg-zinc-900 transition-colors hover:bg-zinc-800/50"
+                  >
+                    <td className="px-4 py-3">
+                      <RankBadge rank={entry.rank} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div>
+                        <Link
+                          href={`/domain/${encodeURIComponent(entry.domainName)}`}
+                          className="font-medium text-white transition-colors hover:text-indigo-400"
+                        >
+                          {entry.domainName}
+                        </Link>
+                        <div className="mt-1">
+                          <AddressDisplay
+                            address={entry.ownerAddress}
+                            label="Owned by"
+                            className="text-xs text-zinc-500"
+                          />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm text-green-400">
+                      {entry.moonCount}
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm text-red-400">
+                      {entry.deadCount}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <ScoreBadge score={entry.score} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );
