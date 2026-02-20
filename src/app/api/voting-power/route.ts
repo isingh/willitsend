@@ -27,6 +27,7 @@ export async function GET(req: NextRequest) {
         id: r.id,
         description: r.description,
         weight: r.weight,
+        minBalance: r.minBalance,
         tokens: r.tokens.map((t) => ({
           name: t.name,
           symbol: t.symbol,

@@ -8,6 +8,13 @@
       "weight": 2,
       "condition": "any",
       "minBalance": "0.0001"
+    },
+    {
+      "id": "doma-power-holder",
+      "description": "Hold 5+ Doma ecosystem tokens",
+      "weight": 5,
+      "condition": "any",
+      "minBalance": "5"
     }
   ]
 }
