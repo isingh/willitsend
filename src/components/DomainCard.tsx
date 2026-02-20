@@ -71,13 +71,13 @@ export function DomainCard({
   const moonPct = total > 0 ? Math.round((listingInfo!.moonCount / total) * 100) : 50;
 
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-white/10 bg-zinc-900 p-5 transition-all hover:border-indigo-500/50 hover:bg-zinc-900/80">
+    <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 p-4 transition-all hover:border-indigo-500/50 hover:bg-zinc-900/80 sm:p-5">
       {/* Gradient accent */}
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 opacity-0 transition-opacity group-hover:opacity-100" />
 
       <div className="flex items-start justify-between">
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-lg font-semibold text-white">
+          <h3 className="truncate text-base font-semibold text-white sm:text-lg">
             {domain.name}
           </h3>
         </div>
@@ -146,7 +146,7 @@ export function DomainCard({
           <button
             onClick={() => listMutation.mutate()}
             disabled={listMutation.isPending}
-            className="w-full rounded-lg bg-indigo-500/10 px-3 py-2 text-xs font-medium text-indigo-400 transition-colors hover:bg-indigo-500/20 disabled:opacity-50"
+            className="flex h-11 w-full items-center justify-center rounded-xl bg-indigo-500/10 text-sm font-medium text-indigo-400 transition-colors active:bg-indigo-500/20 hover:bg-indigo-500/20 disabled:opacity-50 sm:h-10"
           >
             {listMutation.isPending ? "Listing..." : "List for Voting"}
           </button>

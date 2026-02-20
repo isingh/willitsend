@@ -66,7 +66,7 @@ export function Pagination({
             id="page-size"
             value={pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            className="rounded-md border border-white/10 bg-zinc-900 px-2 py-1 text-sm text-white outline-none transition-colors focus:border-indigo-500/50"
+            className="h-9 rounded-lg border border-white/10 bg-zinc-900 px-2 text-sm text-white outline-none transition-colors focus:border-indigo-500/50"
           >
             {PAGE_SIZE_OPTIONS.map((size) => (
               <option key={size} value={size}>
@@ -77,13 +77,13 @@ export function Pagination({
         </div>
       </div>
 
-      {/* Right: page navigation */}
+      {/* Right: page navigation — 44px touch targets */}
       {totalPages > 1 && (
         <div className="flex items-center gap-1">
           <button
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="rounded-md px-2 py-1.5 text-sm text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-zinc-400"
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-zinc-400 transition-colors active:bg-zinc-800 hover:bg-zinc-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-zinc-400 sm:h-9 sm:w-9"
             aria-label="Previous page"
           >
             <svg
@@ -105,7 +105,7 @@ export function Pagination({
             page === "..." ? (
               <span
                 key={`ellipsis-${i}`}
-                className="px-2 py-1.5 text-sm text-zinc-600"
+                className="flex h-10 w-6 items-center justify-center text-sm text-zinc-600 sm:h-9"
               >
                 ...
               </span>
@@ -113,10 +113,10 @@ export function Pagination({
               <button
                 key={page}
                 onClick={() => onPageChange(page)}
-                className={`min-w-[2rem] rounded-md px-2 py-1.5 text-sm font-medium transition-colors ${
+                className={`flex h-10 min-w-[2.5rem] items-center justify-center rounded-lg text-sm font-medium transition-colors sm:h-9 sm:min-w-[2rem] ${
                   page === currentPage
                     ? "bg-indigo-500/20 text-indigo-400"
-                    : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                    : "text-zinc-400 active:bg-zinc-800 hover:bg-zinc-800 hover:text-white"
                 }`}
               >
                 {page}
@@ -127,7 +127,7 @@ export function Pagination({
           <button
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="rounded-md px-2 py-1.5 text-sm text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-zinc-400"
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-zinc-400 transition-colors active:bg-zinc-800 hover:bg-zinc-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-zinc-400 sm:h-9 sm:w-9"
             aria-label="Next page"
           >
             <svg

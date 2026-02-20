@@ -123,7 +123,7 @@ export default function DomainSharePage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-24">
+      <div className="flex flex-col items-center justify-center py-16 sm:py-24">
         <div className="h-64 w-full max-w-lg animate-pulse rounded-2xl border border-white/5 bg-zinc-900" />
       </div>
     );
@@ -131,9 +131,9 @@ export default function DomainSharePage() {
 
   if (error?.message === "not_found" || !domain) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="rounded-2xl border border-white/10 bg-zinc-900 p-10">
-          <h2 className="text-xl font-semibold text-white">
+      <div className="flex flex-col items-center justify-center py-16 text-center sm:py-24">
+        <div className="rounded-2xl border border-white/10 bg-zinc-900 p-8 sm:p-10">
+          <h2 className="text-lg font-semibold text-white sm:text-xl">
             Domain Not Found
           </h2>
           <p className="mt-2 max-w-sm text-sm text-zinc-400">
@@ -141,7 +141,7 @@ export default function DomainSharePage() {
           </p>
           <Link
             href="/"
-            className="mt-4 inline-block text-sm text-indigo-400 hover:text-indigo-300"
+            className="mt-4 inline-flex h-10 items-center text-sm text-indigo-400 hover:text-indigo-300"
           >
             Browse all domains
           </Link>
@@ -155,11 +155,11 @@ export default function DomainSharePage() {
     total > 0 ? Math.round((domain.moonCount / total) * 100) : 50;
 
   return (
-    <div className="mx-auto max-w-lg py-8">
-      {/* Back link */}
+    <div className="mx-auto max-w-lg py-2 sm:py-8">
+      {/* Back link — 44px touch target */}
       <Link
         href="/"
-        className="mb-6 inline-flex items-center gap-1 text-sm text-zinc-400 transition-colors hover:text-white"
+        className="mb-5 inline-flex h-11 items-center gap-1.5 text-sm text-zinc-400 transition-colors active:text-white hover:text-white sm:mb-6"
       >
         <svg
           className="h-4 w-4"
@@ -179,22 +179,22 @@ export default function DomainSharePage() {
 
       {/* Domain card */}
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-zinc-900">
-        <div className="p-6">
+        <div className="p-5 sm:p-6">
           {/* Domain name & share */}
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-white">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="truncate text-xl font-bold text-white sm:text-2xl">
                 {domain.domainName}
               </h1>
               <AddressDisplay
                 address={domain.ownerAddress}
                 label="Owned by"
-                className="mt-1 text-sm text-zinc-500"
+                className="mt-1.5 text-sm text-zinc-500"
               />
             </div>
             <button
               onClick={handleCopyLink}
-              className="flex-shrink-0 rounded-lg bg-zinc-800 p-2 text-zinc-400 transition-colors hover:bg-zinc-700 hover:text-white"
+              className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-zinc-800 text-zinc-400 transition-colors active:bg-zinc-700 hover:bg-zinc-700 hover:text-white sm:h-10 sm:w-10"
               title="Copy share link"
             >
               {copied ? (
@@ -260,12 +260,12 @@ export default function DomainSharePage() {
               )}
             </div>
             {total > 0 && (
-              <p className="mt-1 text-center text-xs text-zinc-500">
+              <p className="mt-1.5 text-center text-xs text-zinc-500">
                 {moonPct}% moon &middot; {total} vote{total !== 1 ? "s" : ""}
               </p>
             )}
             {total === 0 && (
-              <p className="mt-1 text-center text-xs text-zinc-500">
+              <p className="mt-1.5 text-center text-xs text-zinc-500">
                 No votes yet &mdash; be the first!
               </p>
             )}
@@ -273,34 +273,34 @@ export default function DomainSharePage() {
 
           {/* Vote error */}
           {voteMutation.error && (
-            <div className="mt-4 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            <div className="mt-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
               {voteMutation.error.message}
             </div>
           )}
 
           {/* Voting Power Banner */}
           {isConnected && votingPower && (
-            <div className={`mt-4 rounded-lg border px-3 py-2 ${
+            <div className={`mt-4 rounded-xl border px-3 py-2.5 ${
               votingPower.weight > 1
                 ? "border-indigo-500/30 bg-indigo-500/10"
                 : "border-white/10 bg-zinc-800/50"
             }`}>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 {votingPower.weight > 1 ? (
                   <>
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500/20 text-xs font-bold text-indigo-400">
+                    <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-indigo-500/20 text-xs font-bold text-indigo-400">
                       {votingPower.weight}x
                     </span>
-                    <p className="text-xs text-indigo-300">
+                    <p className="min-w-0 truncate text-xs text-indigo-300">
                       Your vote counts as {votingPower.weight} &middot; {votingPower.matchedRule?.description}
                     </p>
                   </>
                 ) : (
                   <>
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-700 text-xs font-medium text-zinc-400">
+                    <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-zinc-700 text-xs font-medium text-zinc-400">
                       1x
                     </span>
-                    <p className="text-xs text-zinc-500">
+                    <p className="min-w-0 truncate text-xs text-zinc-500">
                       {votingPower.rules.length > 0
                         ? `${votingPower.rules[0].description} for ${votingPower.rules[0].weight}x voting power`
                         : "Hold Doma ecosystem tokens to boost your vote"}
@@ -313,14 +313,14 @@ export default function DomainSharePage() {
 
           {/* Vote buttons or connect prompt */}
           {isConnected ? (
-            <div className="mt-4 flex gap-3">
+            <div className="mt-5 flex gap-3">
               <button
                 onClick={() => handleVote("moon")}
                 disabled={isVoting}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition-all ${
+                className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all sm:h-11 ${
                   domain.myVote === "moon"
                     ? "bg-green-500/20 text-green-400 ring-1 ring-green-500/50"
-                    : "bg-zinc-800 text-zinc-300 hover:bg-green-500/10 hover:text-green-400"
+                    : "bg-zinc-800 text-zinc-300 active:bg-green-500/10 active:text-green-400 hover:bg-green-500/10 hover:text-green-400"
                 } disabled:opacity-50`}
               >
                 <span className="text-lg">🚀</span>
@@ -329,10 +329,10 @@ export default function DomainSharePage() {
               <button
                 onClick={() => handleVote("dead")}
                 disabled={isVoting}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition-all ${
+                className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all sm:h-11 ${
                   domain.myVote === "dead"
                     ? "bg-red-500/20 text-red-400 ring-1 ring-red-500/50"
-                    : "bg-zinc-800 text-zinc-300 hover:bg-red-500/10 hover:text-red-400"
+                    : "bg-zinc-800 text-zinc-300 active:bg-red-500/10 active:text-red-400 hover:bg-red-500/10 hover:text-red-400"
                 } disabled:opacity-50`}
               >
                 <span className="text-lg">💀</span>
@@ -340,7 +340,7 @@ export default function DomainSharePage() {
               </button>
             </div>
           ) : (
-            <div className="mt-6 rounded-lg border border-white/10 bg-zinc-800/50 p-4 text-center">
+            <div className="mt-6 rounded-xl border border-white/10 bg-zinc-800/50 p-4 text-center">
               <p className="text-sm text-zinc-400">
                 Connect your wallet to vote on this domain.
               </p>
@@ -357,8 +357,8 @@ export default function DomainSharePage() {
 
       {/* Voters list */}
       {domain.votes.length > 0 && (
-        <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900">
-          <div className="border-b border-white/5 px-6 py-4">
+        <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 sm:mt-6">
+          <div className="border-b border-white/5 px-5 py-3.5 sm:px-6 sm:py-4">
             <h2 className="text-sm font-semibold text-white">
               Votes ({domain.votes.length})
             </h2>
@@ -367,7 +367,7 @@ export default function DomainSharePage() {
             {domain.votes.map((vote) => (
               <li
                 key={vote.voterAddress}
-                className="flex items-center justify-between px-6 py-3"
+                className="flex items-center justify-between px-5 py-3.5 sm:px-6 sm:py-3"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-base">
@@ -383,7 +383,7 @@ export default function DomainSharePage() {
                     </span>
                   )}
                 </div>
-                <span className="text-xs text-zinc-500">
+                <span className="text-xs text-zinc-500 whitespace-nowrap pl-2">
                   {timeAgo(vote.votedAt)}
                 </span>
               </li>

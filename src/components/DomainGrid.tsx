@@ -82,8 +82,8 @@ export function DomainGrid() {
 
   if (!isConnected) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="rounded-2xl border border-white/10 bg-zinc-900 p-10">
+      <div className="flex flex-col items-center justify-center py-16 text-center sm:py-24">
+        <div className="rounded-2xl border border-white/10 bg-zinc-900 p-8 sm:p-10">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-indigo-500/10">
             <svg
               className="h-8 w-8 text-indigo-400"
@@ -99,7 +99,7 @@ export function DomainGrid() {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-semibold text-white">
+          <h2 className="text-lg font-semibold text-white sm:text-xl">
             Connect Your Wallet
           </h2>
           <p className="mt-2 max-w-sm text-sm text-zinc-400">
@@ -112,11 +112,11 @@ export function DomainGrid() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="space-y-3 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0 lg:grid-cols-3">
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className="h-36 animate-pulse rounded-xl border border-white/5 bg-zinc-900"
+            className="h-40 animate-pulse rounded-2xl border border-white/5 bg-zinc-900"
           />
         ))}
       </div>
@@ -125,9 +125,9 @@ export function DomainGrid() {
 
   if (!domains || domains.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="rounded-2xl border border-white/10 bg-zinc-900 p-10">
-          <h2 className="text-xl font-semibold text-white">
+      <div className="flex flex-col items-center justify-center py-16 text-center sm:py-24">
+        <div className="rounded-2xl border border-white/10 bg-zinc-900 p-8 sm:p-10">
+          <h2 className="text-lg font-semibold text-white sm:text-xl">
             No Domains Found
           </h2>
           <p className="mt-2 max-w-sm text-sm text-zinc-400">
@@ -158,7 +158,7 @@ export function DomainGrid() {
           </span>
         </h2>
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="space-y-3 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0 lg:grid-cols-3">
         {paginatedDomains.map((domain) => (
           <DomainCard
             key={domain.id}
