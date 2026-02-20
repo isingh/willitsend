@@ -302,9 +302,9 @@ function HomePageContent() {
         (a, b) => new Date(b.listedAt).getTime() - new Date(a.listedAt).getTime()
       );
     } else if (activeTab === "mooning") {
-      list = [...list].sort((a, b) => b.moonCount - a.moonCount);
+      list = [...list].sort((a, b) => (b.moonCount + b.deadCount) - (a.moonCount + a.deadCount));
     } else if (activeTab === "dying") {
-      list = [...list].sort((a, b) => b.deadCount - a.deadCount);
+      list = [...list].sort((a, b) => (b.moonCount + b.deadCount) - (a.moonCount + a.deadCount));
     }
 
     return list;
