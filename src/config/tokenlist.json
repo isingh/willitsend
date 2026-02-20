@@ -1,0 +1,13 @@
+{
+  "defaultWeight": 1,
+  "tokenlistUrl": "https://cdn.doma.xyz/tokenlist.json",
+  "rules": [
+    {
+      "id": "doma-token-holder",
+      "description": "Hold any Doma ecosystem token",
+      "weight": 2,
+      "condition": "any",
+      "minBalance": "0.0001"
+    }
+  ]
+}

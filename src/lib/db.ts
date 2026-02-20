@@ -28,8 +28,14 @@ export async function initDb() {
       domain_id INTEGER NOT NULL REFERENCES listed_domains(id) ON DELETE CASCADE,
       voter_address TEXT NOT NULL,
       vote_type TEXT NOT NULL CHECK (vote_type IN ('moon', 'dead')),
+      vote_weight INTEGER NOT NULL DEFAULT 1,
       voted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
       UNIQUE(domain_id, voter_address)
     )
+  `;
+
+  // Migration: add vote_weight column to existing tables
+  await sql`
+    ALTER TABLE votes ADD COLUMN IF NOT EXISTS vote_weight INTEGER NOT NULL DEFAULT 1
   `;
 }

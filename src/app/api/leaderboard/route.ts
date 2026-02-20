@@ -11,11 +11,11 @@ export async function GET() {
         d.domain_name,
         d.token_id,
         d.owner_address,
-        COALESCE(SUM(CASE WHEN v.vote_type = 'moon' THEN 1 ELSE 0 END), 0)::int AS moon_count,
-        COALESCE(SUM(CASE WHEN v.vote_type = 'dead' THEN 1 ELSE 0 END), 0)::int AS dead_count,
-        COUNT(v.id)::int AS total_votes,
-        COALESCE(SUM(CASE WHEN v.vote_type = 'moon' THEN 1 ELSE 0 END), 0) -
-          COALESCE(SUM(CASE WHEN v.vote_type = 'dead' THEN 1 ELSE 0 END), 0) AS score
+        COALESCE(SUM(CASE WHEN v.vote_type = 'moon' THEN v.vote_weight ELSE 0 END), 0)::int AS moon_count,
+        COALESCE(SUM(CASE WHEN v.vote_type = 'dead' THEN v.vote_weight ELSE 0 END), 0)::int AS dead_count,
+        COALESCE(SUM(v.vote_weight), 0)::int AS total_votes,
+        COALESCE(SUM(CASE WHEN v.vote_type = 'moon' THEN v.vote_weight ELSE 0 END), 0) -
+          COALESCE(SUM(CASE WHEN v.vote_type = 'dead' THEN v.vote_weight ELSE 0 END), 0) AS score
       FROM listed_domains d
       LEFT JOIN votes v ON v.domain_id = d.id
       GROUP BY d.id
