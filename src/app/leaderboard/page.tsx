@@ -152,7 +152,7 @@ export default function LeaderboardPage() {
           <div className="hidden overflow-hidden rounded-xl border border-white/10 sm:block">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/10 bg-zinc-900/50 text-left text-xs uppercase tracking-wider text-zinc-500">
+                <tr className="border-b border-white/10 bg-zinc-900/50 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400">
                   <th className="px-4 py-3">#</th>
                   <th className="px-4 py-3">Domain</th>
                   <th className="px-4 py-3 text-center">🚀 Moon</th>

@@ -133,6 +133,10 @@ export function VotingPowerMeter({
   // ── Full variant (home page) ──────────────────────────────────────────
   return (
     <div className="mb-4 rounded-xl border border-white/[0.06] bg-zinc-900 px-4 py-4">
+      {/* Label */}
+      <p className="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-500">
+        Your Voting Power
+      </p>
       {/* Stepper track: dots connected by lines */}
       <div className="flex items-start px-1">
         {tiers.map((tier, i) => {
@@ -152,12 +156,12 @@ export function VotingPowerMeter({
                   }`}
                 />
                 <span
-                  className={`mt-1.5 text-[11px] font-medium ${
+                  className={`mt-1.5 text-xs ${
                     isCurrent
-                      ? "text-indigo-400"
+                      ? "font-bold text-indigo-400"
                       : achieved
-                        ? "text-indigo-400/50"
-                        : "text-zinc-600"
+                        ? "font-medium text-indigo-400/50"
+                        : "font-medium text-zinc-600"
                   }`}
                 >
                   {tier.label}

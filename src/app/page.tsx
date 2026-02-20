@@ -109,11 +109,11 @@ function VoteCard({
         {/* Vote bar */}
         {total > 0 && (
           <div className="mt-4">
-            <div className="flex justify-between text-xs text-zinc-500">
-              <span>{domain.moonCount} moon</span>
-              <span>{domain.deadCount} dead</span>
+            <div className="flex justify-between text-xs font-medium">
+              <span className="text-green-400">{domain.moonCount} moon</span>
+              <span className="text-red-400">{domain.deadCount} dead</span>
             </div>
-            <div className="mt-1.5 flex h-2.5 overflow-hidden rounded-full bg-zinc-800">
+            <div className="mt-1.5 flex h-3 overflow-hidden rounded-full bg-zinc-800">
               <div
                 className="bg-green-500 transition-all"
                 style={{ width: `${moonPct}%` }}
@@ -155,9 +155,11 @@ function VoteCard({
         </div>
 
         {domain.myVote && (
-          <p className="mt-2.5 text-center text-xs text-zinc-500">
-            You voted {domain.myVote === "moon" ? "🚀 moon" : "💀 dead"}
-          </p>
+          <div className="mt-2.5 rounded-lg bg-zinc-800/60 px-3 py-1.5 text-center">
+            <p className="text-xs text-zinc-400">
+              You voted {domain.myVote === "moon" ? "🚀 moon" : "💀 dead"}
+            </p>
+          </div>
         )}
       </div>
     </div>
@@ -344,7 +346,7 @@ function HomePageContent() {
         {isConnected && (
           <Link
             href="/domains"
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-indigo-500/10 px-4 text-sm font-medium text-indigo-400 transition-colors active:bg-indigo-500/20 hover:bg-indigo-500/20 sm:h-10"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-indigo-500/40 bg-indigo-500/15 px-4 text-sm font-medium text-indigo-300 transition-colors active:bg-indigo-500/25 hover:border-indigo-500/60 hover:bg-indigo-500/25 hover:text-indigo-200 sm:h-10"
           >
             <svg
               className="h-4 w-4"
@@ -429,7 +431,7 @@ function HomePageContent() {
                     onClick={() => handleTabChange(tab.key)}
                     className={`flex h-9 items-center whitespace-nowrap rounded-lg px-3.5 text-sm font-medium transition-colors sm:h-8 sm:px-3 ${
                       activeTab === tab.key
-                        ? "bg-zinc-800 text-white"
+                        ? "bg-indigo-500/20 text-indigo-300"
                         : "text-zinc-400 active:text-zinc-300 hover:text-zinc-300"
                     }`}
                   >

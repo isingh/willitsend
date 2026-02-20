@@ -41,6 +41,9 @@ export function Header() {
           </button>
 
           <Link href="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/20 text-lg leading-none">
+              🚀
+            </span>
             <span className="text-lg font-bold text-white sm:text-xl">
               Will It Moon
             </span>
@@ -51,15 +54,23 @@ export function Header() {
         </div>
 
         <nav className="hidden items-center gap-6 sm:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-zinc-400 transition-colors hover:text-white"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`relative text-sm font-medium transition-colors hover:text-white ${
+                  isActive ? "text-white" : "text-zinc-400"
+                }`}
+              >
+                {link.label}
+                {isActive && (
+                  <span className="absolute -bottom-[21px] left-0 right-0 h-[2px] rounded-full bg-indigo-500" />
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
         <ConnectButton
