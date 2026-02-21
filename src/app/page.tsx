@@ -57,11 +57,13 @@ function DiscoveryPanel({
   onVote,
   votingId,
   votingPower,
+  address,
 }: {
   domains: ListedDomain[];
   onVote: (domainId: number, voteType: "moon" | "dead") => void;
   votingId: number | null;
   votingPower?: VotingPowerData;
+  address?: string;
 }) {
   const [skipped, setSkipped] = useState<Set<number>>(new Set());
 
@@ -79,7 +81,12 @@ function DiscoveryPanel({
       }
     });
     return domains
-      .filter((d) => !d.myVote && !skipped.has(d.id))
+      .filter(
+        (d) =>
+          !d.myVote &&
+          !skipped.has(d.id) &&
+          d.ownerAddress.toLowerCase() !== address?.toLowerCase()
+      )
       .sort(
         (a, b) =>
           (sortKeys.current.get(a.id) ?? 0) -
@@ -607,6 +614,7 @@ function HomePageContent() {
             onVote={handleVote}
             votingId={votingId}
             votingPower={votingPower}
+            address={address}
           />
 
           {/* Section divider */}
