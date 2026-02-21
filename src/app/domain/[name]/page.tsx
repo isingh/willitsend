@@ -293,7 +293,7 @@ export default function DomainSharePage() {
                 className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all sm:h-11 ${
                   domain.myVote === "moon"
                     ? "bg-green-500/20 text-green-400 ring-1 ring-green-500/50"
-                    : "bg-zinc-800 text-zinc-300 active:bg-green-500/10 active:text-green-400 hover:bg-green-500/10 hover:text-green-400"
+                    : "bg-zinc-800 text-zinc-400 active:bg-green-500/10 active:text-green-400 hover:bg-green-500/10 hover:text-green-400"
                 } disabled:opacity-50`}
               >
                 <span className="text-lg">🚀</span>
@@ -305,7 +305,7 @@ export default function DomainSharePage() {
                 className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all sm:h-11 ${
                   domain.myVote === "dead"
                     ? "bg-red-500/20 text-red-400 ring-1 ring-red-500/50"
-                    : "bg-zinc-800 text-zinc-300 active:bg-red-500/10 active:text-red-400 hover:bg-red-500/10 hover:text-red-400"
+                    : "bg-zinc-800 text-zinc-400 active:bg-red-500/10 active:text-red-400 hover:bg-red-500/10 hover:text-red-400"
                 } disabled:opacity-50`}
               >
                 <span className="text-lg">💀</span>

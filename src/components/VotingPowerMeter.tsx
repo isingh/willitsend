@@ -110,7 +110,7 @@ export function VotingPowerMeter({
           <p className="min-w-0 truncate text-xs">
             <span
               className={`font-medium ${
-                currentWeight > 1 ? "text-indigo-300" : "text-zinc-300"
+                currentWeight > 1 ? "text-indigo-400" : "text-zinc-400"
               }`}
             >
               {currentWeight}x power
@@ -161,7 +161,7 @@ export function VotingPowerMeter({
                       ? "font-bold text-indigo-400"
                       : achieved
                         ? "font-medium text-indigo-400/50"
-                        : "font-medium text-zinc-600"
+                        : "font-medium text-zinc-500"
                   }`}
                 >
                   {tier.label}
@@ -186,7 +186,7 @@ export function VotingPowerMeter({
       {/* Status text */}
       <div className="mt-3 flex items-baseline justify-between gap-2">
         {currentWeight > 1 ? (
-          <p className="text-sm text-zinc-300">
+          <p className="text-sm text-zinc-400">
             Your votes count as{" "}
             <span className="font-semibold text-indigo-400">
               {currentWeight}
@@ -201,7 +201,7 @@ export function VotingPowerMeter({
           </p>
         )}
         {isMaxTier && currentWeight > 1 && (
-          <span className="flex-shrink-0 rounded-full bg-indigo-500/10 px-2 py-0.5 text-[10px] font-medium text-indigo-400">
+          <span className="flex-shrink-0 rounded-full bg-indigo-500/10 px-2 py-0.5 text-xs font-medium text-indigo-400">
             Max power
           </span>
         )}

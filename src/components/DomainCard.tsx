@@ -113,7 +113,7 @@ export function DomainCard({
       {/* Vote results if listed and has votes */}
       {listed && listingInfo && total > 0 && (
         <div className="mt-4">
-          <div className="flex justify-between text-xs font-medium">
+          <div className="flex justify-between text-sm font-semibold">
             <span className="text-green-400">{listingInfo.moonCount} moon</span>
             <span className="text-red-400">{listingInfo.deadCount} dead</span>
           </div>
