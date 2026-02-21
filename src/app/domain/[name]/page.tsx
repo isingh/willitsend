@@ -286,32 +286,40 @@ export default function DomainSharePage() {
 
           {/* Vote buttons or connect prompt */}
           {isConnected ? (
-            <div className="mt-5 flex gap-3">
-              <button
-                onClick={() => handleVote("moon")}
-                disabled={isVoting}
-                className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all sm:h-11 ${
-                  domain.myVote === "moon"
-                    ? "bg-green-500/20 text-green-400 ring-1 ring-green-500/50"
-                    : "bg-zinc-800 text-zinc-400 active:bg-green-500/10 active:text-green-400 hover:bg-green-500/10 hover:text-green-400"
-                } disabled:opacity-50`}
-              >
-                <span className="text-lg">🚀</span>
-                Moon
-              </button>
-              <button
-                onClick={() => handleVote("dead")}
-                disabled={isVoting}
-                className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all sm:h-11 ${
-                  domain.myVote === "dead"
-                    ? "bg-red-500/20 text-red-400 ring-1 ring-red-500/50"
-                    : "bg-zinc-800 text-zinc-400 active:bg-red-500/10 active:text-red-400 hover:bg-red-500/10 hover:text-red-400"
-                } disabled:opacity-50`}
-              >
-                <span className="text-lg">💀</span>
-                Dead
-              </button>
-            </div>
+            address?.toLowerCase() === domain.ownerAddress.toLowerCase() ? (
+              <div className="mt-6 rounded-xl border border-white/10 bg-zinc-800/50 p-4 text-center">
+                <p className="text-sm text-zinc-400">
+                  You can&apos;t vote on your own domain.
+                </p>
+              </div>
+            ) : (
+              <div className="mt-5 flex gap-3">
+                <button
+                  onClick={() => handleVote("moon")}
+                  disabled={isVoting}
+                  className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all sm:h-11 ${
+                    domain.myVote === "moon"
+                      ? "bg-green-500/20 text-green-400 ring-1 ring-green-500/50"
+                      : "bg-zinc-800 text-zinc-400 active:bg-green-500/10 active:text-green-400 hover:bg-green-500/10 hover:text-green-400"
+                  } disabled:opacity-50`}
+                >
+                  <span className="text-lg">🚀</span>
+                  Moon
+                </button>
+                <button
+                  onClick={() => handleVote("dead")}
+                  disabled={isVoting}
+                  className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all sm:h-11 ${
+                    domain.myVote === "dead"
+                      ? "bg-red-500/20 text-red-400 ring-1 ring-red-500/50"
+                      : "bg-zinc-800 text-zinc-400 active:bg-red-500/10 active:text-red-400 hover:bg-red-500/10 hover:text-red-400"
+                  } disabled:opacity-50`}
+                >
+                  <span className="text-lg">💀</span>
+                  Dead
+                </button>
+              </div>
+            )
           ) : (
             <div className="mt-6 rounded-xl border border-white/10 bg-zinc-800/50 p-4 text-center">
               <p className="text-sm text-zinc-400">

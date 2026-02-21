@@ -242,10 +242,12 @@ function VoteCard({
   domain,
   onVote,
   isVoting,
+  address,
 }: {
   domain: ListedDomain;
   onVote: (domainId: number, voteType: "moon" | "dead") => void;
   isVoting: boolean;
+  address?: string;
 }) {
   const total = domain.moonCount + domain.deadCount;
   const moonPct = total > 0 ? Math.round((domain.moonCount / total) * 100) : 50;
@@ -315,32 +317,40 @@ function VoteCard({
         )}
 
         {/* Vote buttons — 48px tall for comfortable thumb tap */}
-        <div className="mt-4 flex gap-3">
-          <button
-            onClick={() => onVote(domain.id, "moon")}
-            disabled={isVoting}
-            className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all sm:h-11 ${
-              domain.myVote === "moon"
-                ? "bg-green-500/20 text-green-400 ring-1 ring-green-500/50"
-                : "bg-zinc-800 text-zinc-400 active:bg-green-500/10 active:text-green-400 hover:bg-green-500/10 hover:text-green-400"
-            } disabled:opacity-50`}
-          >
-            <span className="text-lg">🚀</span>
-            Moon
-          </button>
-          <button
-            onClick={() => onVote(domain.id, "dead")}
-            disabled={isVoting}
-            className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all sm:h-11 ${
-              domain.myVote === "dead"
-                ? "bg-red-500/20 text-red-400 ring-1 ring-red-500/50"
-                : "bg-zinc-800 text-zinc-400 active:bg-red-500/10 active:text-red-400 hover:bg-red-500/10 hover:text-red-400"
-            } disabled:opacity-50`}
-          >
-            <span className="text-lg">💀</span>
-            Dead
-          </button>
-        </div>
+        {address?.toLowerCase() === domain.ownerAddress.toLowerCase() ? (
+          <div className="mt-4 rounded-xl border border-white/10 bg-zinc-800/50 px-4 py-3 text-center">
+            <p className="text-xs text-zinc-500">
+              You can&apos;t vote on your own domain.
+            </p>
+          </div>
+        ) : (
+          <div className="mt-4 flex gap-3">
+            <button
+              onClick={() => onVote(domain.id, "moon")}
+              disabled={isVoting}
+              className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all sm:h-11 ${
+                domain.myVote === "moon"
+                  ? "bg-green-500/20 text-green-400 ring-1 ring-green-500/50"
+                  : "bg-zinc-800 text-zinc-400 active:bg-green-500/10 active:text-green-400 hover:bg-green-500/10 hover:text-green-400"
+              } disabled:opacity-50`}
+            >
+              <span className="text-lg">🚀</span>
+              Moon
+            </button>
+            <button
+              onClick={() => onVote(domain.id, "dead")}
+              disabled={isVoting}
+              className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all sm:h-11 ${
+                domain.myVote === "dead"
+                  ? "bg-red-500/20 text-red-400 ring-1 ring-red-500/50"
+                  : "bg-zinc-800 text-zinc-400 active:bg-red-500/10 active:text-red-400 hover:bg-red-500/10 hover:text-red-400"
+              } disabled:opacity-50`}
+            >
+              <span className="text-lg">💀</span>
+              Dead
+            </button>
+          </div>
+        )}
 
         {domain.myVote && (
           <div className="mt-2.5 rounded-lg bg-zinc-800/60 px-3 py-1.5 text-center">
@@ -685,6 +695,7 @@ function HomePageContent() {
                     domain={domain}
                     onVote={handleVote}
                     isVoting={votingId === domain.id}
+                    address={address}
                   />
                 ))}
               </div>
