@@ -206,7 +206,7 @@ function DiscoveryPanel({
           <button
             onClick={() => onVote(current.id, "moon")}
             disabled={isVotingCurrent}
-            className="flex h-14 items-center justify-center gap-2 rounded-xl border border-green-500/20 bg-green-500/10 text-base font-semibold text-green-400 transition-all active:scale-[0.98] active:bg-green-500/20 hover:border-green-500/30 hover:bg-green-500/20 disabled:opacity-50 sm:h-12"
+            className="flex h-14 items-center justify-center gap-2 rounded-xl bg-zinc-800 text-base font-semibold text-zinc-400 transition-all active:bg-green-500/10 active:text-green-400 hover:bg-green-500/10 hover:text-green-400 disabled:opacity-50 sm:h-12"
           >
             <span className="text-xl">🚀</span>
             Moon
@@ -214,7 +214,7 @@ function DiscoveryPanel({
           <button
             onClick={() => onVote(current.id, "dead")}
             disabled={isVotingCurrent}
-            className="flex h-14 items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 text-base font-semibold text-red-400 transition-all active:scale-[0.98] active:bg-red-500/20 hover:border-red-500/30 hover:bg-red-500/20 disabled:opacity-50 sm:h-12"
+            className="flex h-14 items-center justify-center gap-2 rounded-xl bg-zinc-800 text-base font-semibold text-zinc-400 transition-all active:bg-red-500/10 active:text-red-400 hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50 sm:h-12"
           >
             <span className="text-xl">💀</span>
             Dead
