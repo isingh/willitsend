@@ -2,7 +2,7 @@
 
 import { useAccount } from "wagmi";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo, useCallback, useEffect, Suspense } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Pagination } from "@/components/Pagination";
@@ -65,9 +65,29 @@ function DiscoveryPanel({
 }) {
   const [skipped, setSkipped] = useState<Set<number>>(new Set());
 
-  // Unvoted domains that haven't been skipped this session
+  // Assign each domain a stable random sort key when first seen.
+  // Using a ref means the order never changes across re-renders or refetches,
+  // but is randomised fresh each session. New domains that arrive later get
+  // their own random key appended naturally.
+  const sortKeys = useRef<Map<number, number>>(new Map());
+  useEffect(() => {
+    domains.forEach((d) => {
+      if (!sortKeys.current.has(d.id)) {
+        sortKeys.current.set(d.id, Math.random());
+      }
+    });
+  }, [domains]);
+
+  // Unvoted domains that haven't been skipped this session, in random order
   const queue = useMemo(
-    () => domains.filter((d) => !d.myVote && !skipped.has(d.id)),
+    () =>
+      domains
+        .filter((d) => !d.myVote && !skipped.has(d.id))
+        .sort(
+          (a, b) =>
+            (sortKeys.current.get(a.id) ?? 0) -
+            (sortKeys.current.get(b.id) ?? 0)
+        ),
     [domains, skipped]
   );
 
