@@ -68,3 +68,19 @@ body {
     padding-right: 0.5rem !important;
   }
 }
+
+/* Discovery panel card entrance animation */
+@keyframes discovery-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.discovery-card-enter {
+  animation: discovery-enter 0.18s ease-out;
+}
