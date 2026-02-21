@@ -2,7 +2,7 @@
 
 import { useAccount } from "wagmi";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo, useCallback, useEffect, Suspense } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Pagination } from "@/components/Pagination";
@@ -50,6 +50,194 @@ function timeAgo(dateStr: string) {
   });
 }
 
+// ── Discovery Panel ──────────────────────────────────────────────────────────
+// Shows unvoted domains one at a time. Vote or skip → next domain animates in.
+function DiscoveryPanel({
+  domains,
+  onVote,
+  votingId,
+  votingPower,
+  address,
+}: {
+  domains: ListedDomain[];
+  onVote: (domainId: number, voteType: "moon" | "dead") => void;
+  votingId: number | null;
+  votingPower?: VotingPowerData;
+  address?: string;
+}) {
+  const [skipped, setSkipped] = useState<Set<number>>(new Set());
+
+  // Stable random sort key per domain ID, assigned on first encounter.
+  // Keys are written synchronously inside useMemo so they exist on the very
+  // first render — avoiding the useEffect timing gap that would otherwise
+  // leave every key at 0 and preserve the API's newest-first order.
+  const sortKeys = useRef<Map<number, number>>(new Map());
+
+  // Unvoted domains that haven't been skipped this session, in random order
+  const queue = useMemo(() => {
+    domains.forEach((d) => {
+      if (!sortKeys.current.has(d.id)) {
+        sortKeys.current.set(d.id, Math.random());
+      }
+    });
+    return domains
+      .filter(
+        (d) =>
+          !d.myVote &&
+          !skipped.has(d.id) &&
+          d.ownerAddress.toLowerCase() !== address?.toLowerCase()
+      )
+      .sort(
+        (a, b) =>
+          (sortKeys.current.get(a.id) ?? 0) -
+          (sortKeys.current.get(b.id) ?? 0)
+      );
+  }, [domains, skipped]);
+
+  const current = queue[0];
+  const remaining = queue.length;
+
+  // Empty state — all voted or all skipped
+  if (!current) {
+    const allVoted = domains.every((d) => d.myVote);
+    return (
+      <div className="mb-6 rounded-2xl border border-white/10 bg-zinc-900 p-8 text-center sm:mb-8">
+        <div className="text-3xl">{allVoted ? "🎉" : "✓"}</div>
+        <p className="mt-3 text-base font-semibold text-white">
+          {allVoted ? "All caught up!" : "Queue cleared"}
+        </p>
+        <p className="mt-1.5 text-sm text-zinc-400">
+          {allVoted
+            ? "You've voted on every domain. Check back later."
+            : "You skipped the rest. "}
+          {!allVoted && (
+            <button
+              className="text-indigo-400 transition-colors hover:text-indigo-300"
+              onClick={() => setSkipped(new Set())}
+            >
+              Reset queue
+            </button>
+          )}
+        </p>
+      </div>
+    );
+  }
+
+  const total = current.moonCount + current.deadCount;
+  const moonPct = total > 0 ? Math.round((current.moonCount / total) * 100) : 50;
+  const isVotingCurrent = votingId === current.id;
+
+  const handleSkip = () => {
+    setSkipped((prev) => new Set([...prev, current.id]));
+  };
+
+  return (
+    <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 sm:mb-8">
+      {/* Header: counter + skip */}
+      <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-3">
+        <span className="text-xs text-zinc-500">
+          {remaining} {remaining === 1 ? "domain" : "domains"} to vote on
+        </span>
+        <button
+          onClick={handleSkip}
+          className="text-xs text-zinc-500 transition-colors hover:text-zinc-300 active:text-zinc-300"
+        >
+          Skip →
+        </button>
+      </div>
+
+      {/* Animated card body — key change triggers entrance animation */}
+      <div key={current.id} className="discovery-card-enter p-5 sm:p-6">
+        {/* Domain name */}
+        <h2 className="truncate text-2xl font-bold text-white sm:text-3xl">
+          <Link
+            href={`/domain/${encodeURIComponent(current.domainName)}`}
+            className="transition-colors hover:text-indigo-400"
+          >
+            {current.domainName}
+          </Link>
+        </h2>
+
+        {/* Metadata row */}
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-zinc-500">
+          <AddressDisplay
+            address={current.ownerAddress}
+            label="Owned by"
+            className="text-xs text-zinc-500"
+          />
+          <span>·</span>
+          <span>{timeAgo(current.listedAt)}</span>
+          <Link
+            href={`/domain/${encodeURIComponent(current.domainName)}`}
+            className="text-zinc-600 transition-colors hover:text-zinc-400"
+            title="View details"
+          >
+            <svg
+              className="h-3.5 w-3.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+              />
+            </svg>
+          </Link>
+        </div>
+
+        {/* Sentiment bar */}
+        {total > 0 && (
+          <div className="mt-5">
+            <div className="flex justify-between text-xs font-medium">
+              <span className="text-green-400">{current.moonCount} moon</span>
+              <span className="text-red-400">{current.deadCount} dead</span>
+            </div>
+            <div className="mt-1.5 flex h-2 overflow-hidden rounded-full bg-zinc-800">
+              <div
+                className="bg-green-500 transition-all"
+                style={{ width: `${moonPct}%` }}
+              />
+              <div
+                className="bg-red-500 transition-all"
+                style={{ width: `${100 - moonPct}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Vote buttons */}
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <button
+            onClick={() => onVote(current.id, "moon")}
+            disabled={isVotingCurrent}
+            className="flex h-14 items-center justify-center gap-2 rounded-xl bg-zinc-800 text-base font-semibold text-zinc-400 transition-all active:bg-green-500/10 active:text-green-400 hover:bg-green-500/10 hover:text-green-400 disabled:opacity-50 sm:h-12"
+          >
+            <span className="text-xl">🚀</span>
+            Moon
+          </button>
+          <button
+            onClick={() => onVote(current.id, "dead")}
+            disabled={isVotingCurrent}
+            className="flex h-14 items-center justify-center gap-2 rounded-xl bg-zinc-800 text-base font-semibold text-zinc-400 transition-all active:bg-red-500/10 active:text-red-400 hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50 sm:h-12"
+          >
+            <span className="text-xl">💀</span>
+            Dead
+          </button>
+        </div>
+
+        {/* Voting power — contextual, below the vote action */}
+        {votingPower && (
+          <VotingPowerMeter votingPower={votingPower} compact />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Vote Card (grid) ─────────────────────────────────────────────────────────
 function VoteCard({
   domain,
   onVote,
@@ -336,6 +524,7 @@ function HomePageContent() {
 
   return (
     <div>
+      {/* Page header */}
       <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white sm:text-3xl">Vote</h1>
@@ -366,17 +555,14 @@ function HomePageContent() {
         )}
       </div>
 
+      {/* Error banner */}
       {voteMutation.error && (
         <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
           {voteMutation.error.message}
         </div>
       )}
 
-      {/* Voting Power Progression */}
-      {isConnected && votingPower && (
-        <VotingPowerMeter votingPower={votingPower} />
-      )}
-
+      {/* Not connected */}
       {!isConnected && (
         <div className="flex flex-col items-center justify-center py-16 text-center sm:py-24">
           <div className="rounded-2xl border border-white/10 bg-zinc-900 p-8 sm:p-10">
@@ -390,6 +576,7 @@ function HomePageContent() {
         </div>
       )}
 
+      {/* Loading skeleton */}
       {isConnected && isLoading && (
         <div className="space-y-3 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -401,6 +588,7 @@ function HomePageContent() {
         </div>
       )}
 
+      {/* No domains listed */}
       {isConnected && !isLoading && (!domains || domains.length === 0) && (
         <div className="flex flex-col items-center justify-center py-16 text-center sm:py-24">
           <div className="rounded-2xl border border-white/10 bg-zinc-900 p-8 sm:p-10">
@@ -420,6 +608,24 @@ function HomePageContent() {
 
       {isConnected && domains && domains.length > 0 && (
         <>
+          {/* Discovery panel — hero voting experience */}
+          <DiscoveryPanel
+            domains={domains}
+            onVote={handleVote}
+            votingId={votingId}
+            votingPower={votingPower}
+            address={address}
+          />
+
+          {/* Section divider */}
+          <div className="mb-5 flex items-center gap-3 sm:mb-6">
+            <div className="h-px flex-1 bg-white/[0.06]" />
+            <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+              All Domains
+            </span>
+            <div className="h-px flex-1 bg-white/[0.06]" />
+          </div>
+
           {/* Search and tabs */}
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             {/* Horizontally scrollable tab bar on mobile */}
