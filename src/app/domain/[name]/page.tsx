@@ -236,15 +236,15 @@ export default function DomainSharePage() {
 
           {/* Vote bar */}
           <div className="mt-6">
-            <div className="flex justify-between text-sm text-zinc-400">
-              <span>
+            <div className="flex justify-between text-sm font-medium">
+              <span className="text-green-400">
                 {domain.moonCount} moon{domain.moonCount !== 1 ? "s" : ""}
               </span>
-              <span>
+              <span className="text-red-400">
                 {domain.deadCount} dead
               </span>
             </div>
-            <div className="mt-2 flex h-3 overflow-hidden rounded-full bg-zinc-800">
+            <div className="mt-2 flex h-4 overflow-hidden rounded-full bg-zinc-800">
               {total > 0 ? (
                 <>
                   <div
@@ -293,7 +293,7 @@ export default function DomainSharePage() {
                 className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all sm:h-11 ${
                   domain.myVote === "moon"
                     ? "bg-green-500/20 text-green-400 ring-1 ring-green-500/50"
-                    : "bg-zinc-800 text-zinc-300 active:bg-green-500/10 active:text-green-400 hover:bg-green-500/10 hover:text-green-400"
+                    : "bg-zinc-800 text-zinc-400 active:bg-green-500/10 active:text-green-400 hover:bg-green-500/10 hover:text-green-400"
                 } disabled:opacity-50`}
               >
                 <span className="text-lg">🚀</span>
@@ -305,7 +305,7 @@ export default function DomainSharePage() {
                 className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all sm:h-11 ${
                   domain.myVote === "dead"
                     ? "bg-red-500/20 text-red-400 ring-1 ring-red-500/50"
-                    : "bg-zinc-800 text-zinc-300 active:bg-red-500/10 active:text-red-400 hover:bg-red-500/10 hover:text-red-400"
+                    : "bg-zinc-800 text-zinc-400 active:bg-red-500/10 active:text-red-400 hover:bg-red-500/10 hover:text-red-400"
                 } disabled:opacity-50`}
               >
                 <span className="text-lg">💀</span>
@@ -321,9 +321,11 @@ export default function DomainSharePage() {
           )}
 
           {isConnected && domain.myVote && (
-            <p className="mt-3 text-center text-xs text-zinc-500">
-              You voted {domain.myVote === "moon" ? "🚀 moon" : "💀 dead"}
-            </p>
+            <div className="mt-3 rounded-lg bg-zinc-800/60 px-3 py-1.5 text-center">
+              <p className="text-xs text-zinc-400">
+                You voted {domain.myVote === "moon" ? "🚀 moon" : "💀 dead"}
+              </p>
+            </div>
           )}
         </div>
       </div>

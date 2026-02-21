@@ -113,11 +113,11 @@ export function DomainCard({
       {/* Vote results if listed and has votes */}
       {listed && listingInfo && total > 0 && (
         <div className="mt-4">
-          <div className="flex justify-between text-xs text-zinc-500">
-            <span>{listingInfo.moonCount} moon</span>
-            <span>{listingInfo.deadCount} dead</span>
+          <div className="flex justify-between text-sm font-semibold">
+            <span className="text-green-400">{listingInfo.moonCount} moon</span>
+            <span className="text-red-400">{listingInfo.deadCount} dead</span>
           </div>
-          <div className="mt-1 flex h-2 overflow-hidden rounded-full bg-zinc-800">
+          <div className="mt-1 flex h-3 overflow-hidden rounded-full bg-zinc-800">
             <div
               className="bg-green-500 transition-all"
               style={{ width: `${moonPct}%` }}
@@ -146,7 +146,7 @@ export function DomainCard({
           <button
             onClick={() => listMutation.mutate()}
             disabled={listMutation.isPending}
-            className="flex h-11 w-full items-center justify-center rounded-xl bg-indigo-500/10 text-sm font-medium text-indigo-400 transition-colors active:bg-indigo-500/20 hover:bg-indigo-500/20 disabled:opacity-50 sm:h-10"
+            className="flex h-11 w-full items-center justify-center rounded-xl border border-indigo-500/40 bg-indigo-500/15 text-sm font-medium text-indigo-300 transition-colors active:bg-indigo-500/25 hover:border-indigo-500/60 hover:bg-indigo-500/25 hover:text-indigo-200 disabled:opacity-50 sm:h-10"
           >
             {listMutation.isPending ? "Listing..." : "List for Voting"}
           </button>
