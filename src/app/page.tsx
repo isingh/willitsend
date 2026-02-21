@@ -65,31 +65,27 @@ function DiscoveryPanel({
 }) {
   const [skipped, setSkipped] = useState<Set<number>>(new Set());
 
-  // Assign each domain a stable random sort key when first seen.
-  // Using a ref means the order never changes across re-renders or refetches,
-  // but is randomised fresh each session. New domains that arrive later get
-  // their own random key appended naturally.
+  // Stable random sort key per domain ID, assigned on first encounter.
+  // Keys are written synchronously inside useMemo so they exist on the very
+  // first render — avoiding the useEffect timing gap that would otherwise
+  // leave every key at 0 and preserve the API's newest-first order.
   const sortKeys = useRef<Map<number, number>>(new Map());
-  useEffect(() => {
+
+  // Unvoted domains that haven't been skipped this session, in random order
+  const queue = useMemo(() => {
     domains.forEach((d) => {
       if (!sortKeys.current.has(d.id)) {
         sortKeys.current.set(d.id, Math.random());
       }
     });
-  }, [domains]);
-
-  // Unvoted domains that haven't been skipped this session, in random order
-  const queue = useMemo(
-    () =>
-      domains
-        .filter((d) => !d.myVote && !skipped.has(d.id))
-        .sort(
-          (a, b) =>
-            (sortKeys.current.get(a.id) ?? 0) -
-            (sortKeys.current.get(b.id) ?? 0)
-        ),
-    [domains, skipped]
-  );
+    return domains
+      .filter((d) => !d.myVote && !skipped.has(d.id))
+      .sort(
+        (a, b) =>
+          (sortKeys.current.get(a.id) ?? 0) -
+          (sortKeys.current.get(b.id) ?? 0)
+      );
+  }, [domains, skipped]);
 
   const current = queue[0];
   const remaining = queue.length;
